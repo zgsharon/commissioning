@@ -1,0 +1,1060 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Commissioning"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<title>Commissioning Survey</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+  /* Phone-first field tool: one column, sticky phase bar, bottom action bar. Same tokens as the other ICG field apps. */
+  :root {
+    --bg: #F4F3EF; --surface: #FFFFFF; --surface-2: #ECEAE4; --ink: #1B1F24; --muted: #5F6772;
+    --line: #D6D3CB; --accent: #2E5C8A; --accent-ink: #FFFFFF; --accent-soft: #E3ECF5;
+    --good: #2A7A4B; --good-soft: #DFF1E6; --warn: #A8551C; --warn-soft: #F8E7DA; --bad: #B3261E; --bad-soft: #F9DEDC; --focus: #7FB0E0;
+    --unmit: #7A5A12; --unmit-soft: #F5ECD6; --mit: #2E5C8A; --mit-soft: #E3ECF5;
+    --shadow: 0 1px 2px rgba(20,24,30,.06), 0 6px 20px rgba(20,24,30,.06);
+    --font: "IBM Plex Sans", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #15181C; --surface: #1E2227; --surface-2: #272C33; --ink: #E8E6E1; --muted: #A2A9B3;
+      --line: #363C45; --accent: #7FB0E0; --accent-ink: #0F1A26; --accent-soft: #23364A;
+      --good: #7ACB99; --good-soft: #1F3A2B; --warn: #E9A56E; --warn-soft: #40291A; --bad: #F2A39C; --bad-soft: #4A1F1C; --focus: #A9CBEC;
+      --unmit: #E2C27A; --unmit-soft: #3A2F17; --mit: #7FB0E0; --mit-soft: #23364A;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 20px rgba(0,0,0,.35); color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15181C; --surface: #1E2227; --surface-2: #272C33; --ink: #E8E6E1; --muted: #A2A9B3;
+    --line: #363C45; --accent: #7FB0E0; --accent-ink: #0F1A26; --accent-soft: #23364A;
+    --good: #7ACB99; --good-soft: #1F3A2B; --warn: #E9A56E; --warn-soft: #40291A; --bad: #F2A39C; --bad-soft: #4A1F1C; --focus: #A9CBEC;
+    --unmit: #E2C27A; --unmit-soft: #3A2F17; --mit: #7FB0E0; --mit-soft: #23364A;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 20px rgba(0,0,0,.35); color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font: 16px/1.45 var(--font); margin: 0; }
+  .wrap { max-width: 640px; margin: 0 auto; padding-block: 8px 130px; padding-inline: 16px; }
+  .mono, .num input, .val { font-family: var(--mono); font-weight: 500; font-variant-numeric: tabular-nums; }
+  h1 { font-size: 22px; font-weight: 600; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+  .sub { color: var(--muted); font-size: 13px; }
+  .top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding-block: 10px 6px; }
+  .top > div { min-width: 0; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-block: 12px; }
+  .card > h2, .h2 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin: 0 0 10px; }
+  .card.unmit { border-color: var(--unmit); }
+  .card.mit { border-color: var(--mit); }
+  .card.unmit > h2 { color: var(--unmit); }
+  .card.mit > h2 { color: var(--mit); }
+  .lbl { display: block; font-size: 14px; font-weight: 500; margin-bottom: 5px; }
+  .hint { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  input[type=text], input[type=number], textarea, select {
+    width: 100%; font: inherit; font-size: 16px; color: var(--ink); background: var(--surface); border: 1px solid var(--line);
+    border-radius: 10px; padding: 10px 12px; min-height: 46px; -webkit-appearance: none; appearance: none;
+  }
+  textarea { min-height: 70px; resize: vertical; line-height: 1.45; }
+  input:focus, textarea:focus, select:focus, button:focus-visible, label.add:focus-within { outline: 2px solid var(--focus); outline-offset: 1px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px 10px; }
+  .f { min-width: 0; }
+  .f .lbl { font-size: 13px; color: var(--muted); font-weight: 500; margin-bottom: 4px; }
+  .f .lbl b { color: var(--ink); font-weight: 600; }
+  .num { display: flex; align-items: stretch; }
+  .num input { border-radius: 0 10px 10px 0; min-width: 0; }
+  .num .unit { align-self: center; padding-left: 6px; color: var(--muted); font-size: 13px; white-space: nowrap; }
+  .num.nosign input { border-radius: 10px; }
+  .sgn { flex: 0 0 40px; font: 600 18px/1 var(--mono); border: 1px solid var(--line); border-right: 0; border-radius: 10px 0 0 10px; background: var(--surface-2); color: var(--ink); cursor: pointer; }
+  .sgn.pos { color: var(--warn); }
+  .seg { display: flex; gap: 6px; flex-wrap: wrap; }
+  .seg button { flex: 1 1 auto; min-height: 42px; font: inherit; font-size: 14px; font-weight: 500; padding: 6px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .seg button[data-tone="good"][aria-pressed="true"] { background: var(--good); border-color: var(--good); color: var(--bg); }
+  .seg button[data-tone="warn"][aria-pressed="true"] { background: var(--warn); border-color: var(--warn); color: var(--bg); }
+  .seg.small button { min-height: 34px; font-size: 13px; padding: 3px 10px; flex: 0 1 auto; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chips button { min-height: 38px; padding: 5px 13px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); font: inherit; font-size: 14px; cursor: pointer; }
+  .chips button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
+  .btn { font: inherit; font-size: 15px; font-weight: 500; min-height: 44px; padding: 8px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+  .btn.small { min-height: 34px; font-size: 13px; padding: 4px 10px; }
+  .btn.ghost { background: transparent; }
+  .btn.danger { color: var(--bad); }
+  .btn:disabled { opacity: .5; cursor: default; }
+  .btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  label.btn input[type=file] { display: none; }
+  /* sticky phase bar */
+  .phasebar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 3; background: var(--bg); padding-block: 8px; border-bottom: 1px solid var(--line); }
+  .phasebar .seg button { min-height: 44px; font-weight: 600; }
+  .phasebar .seg button[data-ph="unmit"][aria-pressed="true"] { background: var(--unmit); border-color: var(--unmit); color: var(--bg); }
+  .phasebar .seg button[data-ph="mit"][aria-pressed="true"] { background: var(--mit); border-color: var(--mit); color: var(--bg); }
+  .phasebar .hint { margin-top: 6px; }
+  .pbrow { display: flex; gap: 8px; align-items: stretch; }
+  .pbrow .seg { flex: 1; min-width: 0; }
+  .pback { flex: 0 0 auto; min-height: 44px; padding: 6px 10px; font-weight: 600; color: var(--accent); }
+  @media (max-width: 360px) { .phasebar .seg button { font-size: 13px; padding: 6px 6px; } }
+  /* point list */
+  .plist { display: flex; flex-direction: column; gap: 8px; }
+  .pt { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; align-items: center; text-align: left; width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); font: inherit; cursor: pointer; }
+  .pt .id { font-weight: 600; font-size: 16px; }
+  .pt .ty { color: var(--muted); font-size: 13px; }
+  .pt .vals { grid-column: 1 / -1; display: flex; gap: 12px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+  .pt .vals .val { color: var(--ink); font-size: 13px; }
+  .pt .right { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .pill.u { background: var(--unmit-soft); color: var(--unmit); }
+  .pill.m { background: var(--mit-soft); color: var(--mit); }
+  .pill.off { background: var(--surface-2); color: var(--muted); }
+  .pill.good { background: var(--good-soft); color: var(--good); }
+  .pill.warn { background: var(--warn-soft); color: var(--warn); }
+  .pill.bad { background: var(--bad-soft); color: var(--bad); }
+  .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .summary div { background: var(--surface-2); border-radius: 10px; padding: 8px 10px; }
+  .summary b { display: block; font: 600 20px/1.2 var(--mono); font-variant-numeric: tabular-nums; }
+  .summary span { font-size: 12px; color: var(--muted); }
+  /* point detail */
+  .design { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 14px; }
+  .design dt { color: var(--muted); }
+  .design dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+  .warns { display: flex; flex-direction: column; gap: 6px; }
+  .w { padding: 8px 10px; border-radius: 10px; font-size: 14px; }
+  .w.bad { background: var(--bad-soft); color: var(--bad); font-weight: 500; }
+  .w.warn { background: var(--warn-soft); color: var(--warn); }
+  .w.info { background: var(--surface-2); color: var(--muted); }
+  .legs { display: flex; flex-direction: column; gap: 10px; }
+  .leg { padding: 10px; border-radius: 10px; background: var(--surface-2); }
+  .leg .head { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .leg .head input { min-height: 38px; padding: 6px 10px; }
+  .leg .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .leg .sgn { flex-basis: 32px; }
+  .leg input, .leg .sgn { background: var(--surface); }
+  .leg .sgn { background: var(--bg); }
+  .chk { display: flex; flex-direction: column; gap: 8px; }
+  .chk .row { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+  .chk .row span { flex: 1 1 180px; font-size: 15px; }
+  .slot { padding-block: 8px; border-top: 1px solid var(--line); }
+  .slot:first-of-type { border-top: 0; padding-top: 0; }
+  .slot .sh { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .slot .sh .nm { font-weight: 500; }
+  .slot .sh .nm .pill { margin-left: 6px; }
+  .thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 6px; }
+  .thumbs:empty { display: none; }
+  .thumb { position: relative; border-radius: 8px; overflow: hidden; background: var(--surface-2); }
+  .thumb img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; max-width: 100%; }
+  .thumb button { position: absolute; top: 4px; right: 4px; min-height: 28px; font: inherit; font-size: 12px; border-radius: 8px; border: 0; background: rgba(0,0,0,.6); color: #fff; padding: 2px 8px; cursor: pointer; }
+  .thumb .tall { position: absolute; left: 4px; bottom: 4px; font-size: 11px; font-weight: 600; padding: 1px 6px; border-radius: 6px; background: var(--warn); color: var(--bg); }
+  .thumb .cap { font-size: 11px; padding: 3px 6px; color: var(--muted); overflow-wrap: anywhere; }
+  label.add { display: inline-flex; align-items: center; justify-content: center; min-height: 36px; padding: 4px 12px; border: 1px dashed var(--accent); border-radius: 10px; color: var(--accent); font-weight: 600; font-size: 14px; cursor: pointer; }
+  label.add input { display: none; }
+  .gpsrow { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .gpsrow .val { font-size: 14px; }
+  .xrow { display: grid; grid-template-columns: 1.4fr 1fr .6fr auto; gap: 6px; align-items: center; margin-top: 6px; }
+  .xrow input { min-height: 40px; padding: 6px 8px; font-size: 15px; }
+  .xrow button { min-height: 40px; min-width: 40px; font: inherit; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); cursor: pointer; }
+  .nav2 { display: flex; justify-content: space-between; gap: 8px; margin-top: 12px; }
+  details > summary { cursor: pointer; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); list-style: none; display: flex; justify-content: space-between; align-items: center; min-height: 28px; }
+  details > summary::-webkit-details-marker { display: none; }
+  details > summary::after { content: "+"; font-size: 18px; }
+  details[open] > summary::after { content: "\2013"; }
+  details[open] > summary { margin-bottom: 10px; }
+  .unmit details > summary, details.unmit > summary { color: var(--unmit); }
+  .mit details > summary, details.mit > summary { color: var(--mit); }
+  .bar { position: fixed; left: 0; right: 0; bottom: 0; padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)); background: var(--surface); border-top: 1px solid var(--line); box-shadow: var(--shadow); z-index: 4; }
+  .bar .inner { max-width: 640px; margin: 0 auto; display: flex; gap: 8px; align-items: center; }
+  .bar .status { font-size: 13px; color: var(--muted); flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(86px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 14px; box-shadow: var(--shadow); max-width: calc(100% - 32px); z-index: 9; }
+  .confirm { background: var(--warn-soft); border: 1px solid var(--warn); border-radius: 12px; padding: 12px; margin-block: 12px; }
+  .confirm p { margin: 0 0 10px; color: var(--ink); }
+  .demo { background: var(--accent-soft); border-radius: 10px; padding: 8px 10px; font-size: 13px; }
+  .dwg { position: fixed; inset: 0; z-index: 20; background: var(--bg); display: flex; flex-direction: column; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .dwg-bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 8px 12px; border-bottom: 1px solid var(--line); background: var(--surface); }
+  .dwg-bar select { width: auto; min-width: 0; flex: 1 1 140px; min-height: 36px; padding: 4px 28px 4px 8px; font-size: 14px; }
+  .dwg-name { flex: 1 1 140px; min-width: 0; font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dwg-ctl { display: flex; gap: 6px; align-items: center; }
+  .dwg-ctl .mono { font-size: 13px; min-width: 44px; text-align: center; }
+  .dwg-scroll { flex: 1; overflow: auto; -webkit-overflow-scrolling: touch; background: #fff; }
+  .dwg-scroll canvas { display: block; max-width: none; }
+  .back { font: inherit; font-size: 15px; color: var(--accent); background: none; border: 0; padding: 8px 0; cursor: pointer; font-weight: 500; }
+  .stack { display: flex; flex-direction: column; gap: 10px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 380px) { .row2 { grid-template-columns: 1fr; } .summary b { font-size: 17px; } }
+  @media (prefers-reduced-motion: no-preference) { .seg button, .chips button, .btn, .pt { transition: background-color .12s ease, border-color .12s ease; } }
+</style>
+
+<div id="app" class="wrap"></div>
+<div id="bar" class="bar" hidden><div class="inner"><div class="status" id="barStatus"></div><button class="btn" id="btnJson" type="button">Readings only</button><button class="btn primary" id="btnZip" type="button">Save package</button></div></div>
+<div id="toast" class="toast" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+(function () {
+'use strict';
+const APP_VERSION = '1.7 (2026-10-07)';
+
+// ---------- field and point type definitions ----------
+// sign: 'neg' fields show a minus toggle that starts on minus (typed value is the magnitude); 'pm' starts on minus but is often positive.
+const F = {
+  dc_on:  { l: 'DC pipe-to-soil ON', u: 'V', sign: 'neg' },
+  dc_off: { l: 'DC pipe-to-soil OFF', u: 'V', sign: 'neg', opt: 'off' },
+  ac:     { l: 'AC pipe-to-soil', u: 'VAC' },
+  ssd_a:  { l: 'SSD AC current', u: 'A' },
+  c_ac:   { l: 'Coupon AC potential', u: 'VAC' },
+  c_iac:  { l: 'Coupon AC current', u: 'µA' },
+  c_dc:   { l: 'Coupon DC potential', u: 'V', sign: 'neg' },
+  c_disc: { l: 'Coupon disconnected DC', u: 'V', sign: 'neg' },
+  c_idc:  { l: 'Coupon DC current', u: 'µA', sign: 'pm' },
+  ref:    { l: 'Stationary-to-portable ref cell', u: 'V', sign: 'pm' },
+  rect_v: { l: 'Rectifier output', u: 'V' },
+  rect_a: { l: 'Rectifier output', u: 'A' },
+  rect_tap: { l: 'Tap setting', u: '', text: true },
+  iso_a:  { l: 'Side A DC ON', u: 'V', sign: 'neg' },
+  iso_b:  { l: 'Side B DC ON', u: 'V', sign: 'neg' },
+  iso_aac:{ l: 'Side A AC', u: 'VAC' },
+  iso_bac:{ l: 'Side B AC', u: 'VAC' },
+  f_dc_on:{ l: 'Foreign line DC ON', u: 'V', sign: 'neg' },
+  f_dc_off:{ l: 'Foreign line DC OFF', u: 'V', sign: 'neg', opt: 'off' },
+  f_ac:   { l: 'Foreign line AC', u: 'VAC' },
+  f_owner:{ l: 'Foreign line owner', u: '', text: true },
+  bond_i: { l: 'Bond current', u: 'mA', sign: 'pm' },
+  bond_r: { l: 'Bond resistor', u: 'Ω' },
+  cs_dc:  { l: 'Casing DC ON', u: 'V', sign: 'neg' },
+  cs_ac:  { l: 'Casing AC', u: 'VAC' },
+  an_oc:  { l: 'Anode open-circuit', u: 'V', sign: 'neg' },
+  an_i:   { l: 'Anode current', u: 'mA' },
+  an_disc:{ l: 'Pipe DC, anode disconnected', u: 'V', sign: 'neg' }
+};
+const TYPES = {
+  rmu: { name: 'MetriCorr RMU', phase: ['dc_on', 'dc_off', 'ac'], once: ['ref'], metricorr: true,
+    photos: ['Front', 'Left side', 'Right side', 'Test wires', 'ER probe labels', 'Serial label'],
+    checks: ['Unit extracts from the post', 'Test station head intact and secured', 'Reference cell in soil, packaging removed', 'Test leads intact and labeled'] },
+  ssd: { name: 'SSD and grounding', phase: ['dc_on', 'dc_off', 'ac'], mitOnly: ['ssd_a'], legs: 'Copper grounding',
+    photos: ['Front', 'Left side', 'Right side', 'Inside', 'Connected'],
+    checks: ['Switch wired correctly (not to the black hat)', 'SSD box clean, no dirt or water', 'Test leads intact, no cut strands', 'Exposed connections taped', 'Lid and labels in place'] },
+  cts: { name: 'Coupon test station', phase: ['dc_on', 'dc_off', 'ac', 'c_ac', 'c_iac', 'c_dc', 'c_disc', 'c_idc'], once: ['ref'],
+    photos: ['Front', 'Inside head', 'Overview'],
+    checks: ['Head attached and secured', 'Coupon switch present', 'Leads labeled and intact', 'Gravel or base in good condition'] },
+  ts: { name: 'Test station', phase: ['dc_on', 'dc_off', 'ac'], once: ['ref'],
+    photos: ['Front', 'Inside head', 'Overview'],
+    checks: ['Head attached and secured', 'Leads labeled and intact', 'Gravel or base in good condition'] },
+  gcm: { name: 'Gradient control mat or zinc ribbon', phase: ['dc_on', 'ac'], legs: 'Zinc ribbon or mat',
+    photos: ['Overview', 'Connection'], checks: ['Connections intact', 'Mat or ribbon leads accessible'] },
+  rect: { name: 'Rectifier', phase: [], once: ['rect_v', 'rect_a', 'rect_tap'],
+    photos: ['Overview', 'Meters', 'Nameplate'], checks: ['Meters working', 'Cabinet secure and grounded'] },
+  iso: { name: 'Insulating joint / isolation check', phase: [], once: ['iso_a', 'iso_b', 'iso_aac', 'iso_bac'], result: { key: 'iso_res', label: 'Result', opts: [['isolated', 'Isolated', 'good'], ['shorted', 'Shorted', 'warn'], ['unclear', 'Unclear', '']] },
+    photos: ['Overview', 'Joint'], checks: [] },
+  foreign: { name: 'Foreign line crossing', phase: ['dc_on', 'dc_off', 'ac', 'f_dc_on', 'f_dc_off', 'f_ac'], once: ['f_owner', 'bond_i'],
+    result: { key: 'bond', label: 'Bond between the lines', opts: [['bonded', 'Bonded', ''], ['none', 'Not bonded', ''], ['unk', 'Not sure', '']] },
+    photos: ['Front', 'Inside head', 'Overview'], checks: ['Leads labeled by structure', 'Head attached and secured'] },
+  casing: { name: 'Casing', phase: ['dc_on', 'dc_off', 'ac', 'cs_dc', 'cs_ac'], once: [], result: { key: 'iso_res', label: 'Result', opts: [['isolated', 'Isolated', 'good'], ['shorted', 'Shorted', 'warn'], ['unclear', 'Unclear', '']] },
+    photos: ['Front', 'Inside head', 'Overview'], checks: ['Pipe and casing leads identified', 'Head attached and secured'] },
+  anode: { name: 'Galvanic anode test station', phase: ['dc_on', 'dc_off', 'ac'], once: ['an_oc', 'an_i', 'an_disc'],
+    photos: ['Front', 'Inside head', 'Overview'], checks: ['Anode leads identified', 'Shunt or link in place', 'Head attached and secured'] },
+  bond: { name: 'Bond station', phase: ['dc_on', 'dc_off', 'ac', 'f_dc_on', 'f_dc_off', 'f_ac'], once: ['f_owner', 'bond_i', 'bond_r'],
+    photos: ['Front', 'Inside', 'Overview'], checks: ['Bond connected', 'Shunt and resistor in good condition'] },
+  riser: { name: 'Above-grade pipe or riser', phase: ['dc_on', 'dc_off', 'ac'], once: [],
+    photos: ['Overview', 'Test spot'], checks: ['Coating at the soil-to-air interface in good condition'] },
+  other: { name: 'Other', phase: ['dc_on', 'dc_off', 'ac'], once: [],
+    photos: ['Overview', 'Close-up'], checks: [] }
+};
+const STATUS = [['tested', 'Tested', 'good'], ['notfound', 'Not found', 'warn'], ['notinst', 'Not installed', 'warn'], ['cancel', 'Cancelled', ''], ['noaccess', 'No access', 'warn']];
+const PH = { unmit: 'Unmitigated', mit: 'Mitigated' };
+const PK = { unmit: 'u', mit: 'm' };
+
+// ---------- small helpers ----------
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const num = v => { if (v == null || v === '') return null; const n = Number(String(v).replace(/[^0-9.+\-eE]/g, '')); return isFinite(n) ? n : null; };
+const today = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+const nowIso = () => new Date().toISOString();
+const fmtFt = f => f == null ? '' : (f < 1000 ? Math.round(f) + ' ft' : (f / 5280).toFixed(2) + ' mi');
+function distFt(a, b, c, d) {
+  if ([a, b, c, d].some(x => x == null || !isFinite(x))) return null;
+  const R = 20902231, t = Math.PI / 180, dLa = (c - a) * t, dLo = (d - b) * t;
+  const h = Math.sin(dLa / 2) ** 2 + Math.cos(a * t) * Math.cos(c * t) * Math.sin(dLo / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+function store(k, v) { try { if (v === undefined) return JSON.parse(localStorage.getItem(k)); localStorage.setItem(k, JSON.stringify(v)); } catch (e) { return null; } }
+let toastT;
+function toast(msg, ms) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, ms || 2600); }
+function slug(s) { return String(s || '').replace(/[\\/:*?"<>|#%]/g, '-').replace(/\s+/g, ' ').trim(); }
+
+// ---------- photo storage (IndexedDB, bytes as ArrayBuffer, never Blob) ----------
+let dbp;
+function db() {
+  if (!dbp) dbp = new Promise((res, rej) => {
+    const r = indexedDB.open('icg-commissioning', 2);
+    r.onupgradeneeded = () => { const d = r.result; if (!d.objectStoreNames.contains('photos')) d.createObjectStore('photos', { keyPath: 'key' }); if (!d.objectStoreNames.contains('files')) d.createObjectStore('files', { keyPath: 'key' }); };
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  });
+  return dbp;
+}
+async function idb(mode, fn, storeName) {
+  const d = await db(); const sn = storeName || 'photos';
+  return new Promise((res, rej) => { const tx = d.transaction(sn, mode); const s = tx.objectStore(sn); let out; Promise.resolve(fn(s, v => { out = v; })).catch(rej); tx.oncomplete = () => res(out); tx.onerror = () => rej(tx.error); tx.onabort = () => rej(tx.error); });
+}
+const putPhoto = rec => idb('readwrite', s => { s.put(rec); });
+const putFile = rec => idb('readwrite', s => { s.put(rec); }, 'files');
+const delFile = key => idb('readwrite', s => { s.delete(key); }, 'files');
+const getFile = key => idb('readonly', (s, set) => { const r = s.get(key); r.onsuccess = () => set(r.result); }, 'files');
+const delPhoto = key => idb('readwrite', s => { s.delete(key); });
+const getPhoto = key => idb('readonly', (s, set) => { const r = s.get(key); r.onsuccess = () => set(r.result); });
+const jobPhotos = (jobId, withBytes) => idb('readonly', (s, set) => {
+  const out = []; const r = s.openCursor(IDBKeyRange.bound(jobId + '/', jobId + '/￿'));
+  r.onsuccess = () => { const c = r.result; if (!c) { set(out); return; } const v = c.value; out.push(withBytes ? v : Object.assign({}, v, { bytes: null })); c.continue(); };
+});
+
+// ---------- app state ----------
+let job = null, st = null, view = { name: 'home' }, pending = null, here = null, watchId = null;
+function jobsList() { return store('icgc:jobs') || []; }
+function saveJobDef() {
+  store('icgc:job:' + job.id, job);
+  const list = jobsList().filter(j => j.id !== job.id); list.unshift({ id: job.id, line: job.line, title: job.title }); store('icgc:jobs', list); store('icgc:active', job.id);
+}
+let saveT;
+function save(now) { clearTimeout(saveT); const f = () => { if (job && st) store('icgc:st:' + job.id, st); }; if (now) f(); else saveT = setTimeout(f, 250); }
+function newState() { return { drawings: [], tech: [], phase: (job.options && job.options.firstPhase) || 'unmit', sort: 'drawing', pts: {}, added: [], dates: [], crewExtra: [] }; }
+function openJob(id) {
+  const j = store('icgc:job:' + id); if (!j) return false;
+  job = j; st = store('icgc:st:' + id) || newState(); store('icgc:active', id); return true;
+}
+const LEAD_TO = ['Pipe', 'Coupon', 'Anode', 'Copper ground', 'Zinc ribbon', 'Ref cell', 'Foreign line', 'Casing', 'SSD', 'Unknown'];
+const LEAD_COND = [['ok', 'OK', 'good'], ['broken', 'Broken', 'warn'], ['disc', 'Disconnected', 'warn']];
+const SSD_STATE = [['conn', 'Connected', 'good'], ['disc', 'Disconnected', ''], ['miswired', 'Miswired', 'warn']];
+function eff(d) { const o = st.pts[d.id] && st.pts[d.id].ov; if (!o) return d; const e = Object.assign({}, d); ['type', 'mit', 'note', 'tag'].forEach(k => { if (o[k]) e[k] = o[k]; }); e.drawingType = d.type; return e; }
+function allPoints() { return (job.points || []).concat(st.added || []).map(eff); }
+function pointDef(id) { return allPoints().find(p => p.id === id); }
+function ps(id) {
+  if (!st.pts[id]) st.pts[id] = { status: 'tested', u: {}, m: {}, x: {}, sg: {}, chk: {}, er: {}, extra: { u: [], m: [] }, rem: '', by: {} };
+  const p = st.pts[id], def = pointDef(id);
+  if (!p.legs && def && TYPES[def.type] && TYPES[def.type].legs) p.legs = (def.legs && def.legs.length ? def.legs : [{ label: '', len: '' }]).map(l => ({ label: l.label, len: l.len, pot: '', r1: '', r2: '' }));
+  return p;
+}
+function touch(id, phaseKey) {
+  const d = today(); if (st.dates.indexOf(d) < 0) st.dates.push(d);
+  const p = ps(id); p.t = nowIso();
+  if (phaseKey) { p.by[phaseKey] = p.by[phaseKey] || { tech: st.tech.join(', '), t: nowIso() }; }
+}
+
+// ---------- readings status and checks ----------
+function phaseDone(def, p, k) {
+  const T = TYPES[def.type]; if (!T) return false;
+  if (!T.phase.length) return T.once.some(f => p.x[f] !== undefined && p.x[f] !== '') || !!(T.result && p.x[T.result.key]);
+  return p[k] && p[k].ac !== undefined && p[k].ac !== '';
+}
+function pointDone(def) {
+  const p = ps(def.id); if (p.status !== 'tested') return true;
+  const T = TYPES[def.type]; if (!T.phase.length) return phaseDone(def, p, 'x');
+  return phaseDone(def, p, 'u') && phaseDone(def, p, 'm');
+}
+function density(uA) { const a = Number((job.options && job.options.couponAreaCm2) || 1); const i = num(uA); return i == null ? null : i / (a * 100); }
+function checks(def) {
+  const p = ps(def.id), T = TYPES[def.type] || { phase: [], once: [] }, out = [];
+  if (p.status !== 'tested') { out.push({ lvl: 'info', msg: 'Marked ' + STATUS.find(s => s[0] === p.status)[1].toLowerCase() + '. Add a remark saying why.' }); }
+  ['u', 'm'].forEach(k => {
+    const r = p[k] || {}, nm = k === 'u' ? 'Unmitigated' : 'Mitigated';
+    const ac = num(r.ac); if (ac != null && ac >= 15) out.push({ lvl: 'bad', msg: nm + ' AC is ' + ac + ' VAC, at or over the 15 VAC safety limit.' });
+    const dc = num(r.dc_on); if (dc != null && dc > -0.5) out.push({ lvl: 'warn', msg: nm + ' DC ON is ' + dc + ' V. That is weak or positive, so check the pipe test lead.' });
+    if (def.type === 'cts') { const j = density(r.c_iac); if (j != null && j > 100) out.push({ lvl: 'bad', msg: nm + ' coupon AC density ' + j.toFixed(1) + ' A/m². AC corrosion likely (over 100).' }); else if (j != null && j > 20) out.push({ lvl: 'warn', msg: nm + ' coupon AC density ' + j.toFixed(1) + ' A/m². AC corrosion possible (20 to 100).' }); }
+  });
+  if (def.type === 'ssd') {
+    const ua = num(p.u.ac), ma = num(p.m.ac), ud = num(p.u.dc_on), md = num(p.m.dc_on), sa = num(p.m.ssd_a);
+    if (ua != null && ma != null && ma > ua + 0.25) out.push({ lvl: 'warn', msg: 'Mitigated AC (' + ma + ') is higher than unmitigated (' + ua + '). Check the SSD wiring and switch.' });
+    if (ma != null && sa === 0) out.push({ lvl: 'warn', msg: 'No SSD current with mitigation connected. Check the switch is closed.' });
+    if (ud != null && md != null && Math.abs(ud - md) > 0.15) out.push({ lvl: 'warn', msg: 'DC ON moved ' + Math.abs(ud - md).toFixed(3) + ' V between surveys. Check the SSD is blocking DC.' });
+  }
+  (p.legs || []).forEach((l, i) => {
+    const nm = l.label || ('Leg ' + (i + 1)), pot = num(l.pot), r1 = num(l.r1), r2 = num(l.r2), len = num(l.len);
+    if (pot != null && def.type === 'ssd' && (pot < -0.35 || pot > 0.05)) out.push({ lvl: 'warn', msg: nm + ' copper potential ' + pot + ' V is outside the usual range for buried copper (about -0.35 to 0).' });
+    if (r1 != null && r2 != null && Math.max(r1, r2) > 0 && Math.abs(r1 - r2) / Math.max(r1, r2) > 0.15) out.push({ lvl: 'warn', msg: nm + ' resistance readings ' + r1 + ' and ' + r2 + ' ohms disagree. Recheck the connections.' });
+    const r = r1 != null ? r1 : r2;
+    if (def.type === 'ssd' && r != null && r > 10) out.push({ lvl: 'warn', msg: nm + ' resistance ' + r + ' ohms is high' + (len ? ' for ' + len + ' ft of cable' : '') + '. Recheck the connections before leaving.' });
+  });
+  if (def.type === 'rmu' && p.er.led === 'none') out.push({ lvl: 'warn', msg: 'MetriCorr shows no light. Check the battery and antenna connections, then press the button again.' });
+  const ref = num(p.x.ref); if (ref != null && Math.abs(ref) > 0.1) out.push({ lvl: 'warn', msg: 'Stationary ref cell is ' + ref + ' V from the portable. Check the ref cell is in contact with soil.' });
+  if (p.gps && def.lat != null) { const d = distFt(def.lat, def.lon, p.gps.lat, p.gps.lon); const tol = Number((job.options && job.options.gpsTolFt) || 50); if (d != null && d > tol) out.push({ lvl: 'warn', msg: 'Your GPS is ' + fmtFt(d) + ' from the design location. Confirm this is ' + def.id + '.' }); }
+  (T.checks || []).forEach((c, i) => { if (p.chk[i] === 'n') out.push({ lvl: 'warn', msg: 'Checklist: ' + c + ' (No).' }); });
+  if ((def.type === 'iso' || def.type === 'casing') && p.x.iso_res === 'shorted') out.push({ lvl: 'bad', msg: (def.type === 'casing' ? 'Casing' : 'Isolation') + ' recorded as shorted.' });
+  if (def.type === 'casing') ['u', 'm'].forEach(k => { const pd = num(p[k].dc_on), cd = num(p[k].cs_dc); if (pd != null && cd != null && Math.abs(pd - cd) < 0.1) out.push({ lvl: 'warn', msg: (k === 'u' ? 'Unmitigated' : 'Mitigated') + ': pipe and casing are within 0.1 V. The casing may be shorted.' }); });
+  if (def.type === 'foreign' || def.type === 'bond') ['u', 'm'].forEach(k => { const fa = num(p[k].f_ac); if (fa != null && fa >= 15) out.push({ lvl: 'bad', msg: 'Foreign line AC is ' + fa + ' VAC, at or over 15 VAC.' }); });
+  if (def.type === 'anode' && num(p.x.an_i) === 0) out.push({ lvl: 'warn', msg: 'Anode current is zero. Check the anode lead and shunt.' });
+  if (p.match === 'no') out.push({ lvl: 'info', msg: 'Differs from the drawings' + (p.diff ? ': ' + p.diff : '. Say what is different in Field changes.') });
+  if (def.type === 'ssd') {
+    if (p.ssdFound === 'miswired') out.push({ lvl: 'warn', msg: 'SSD found miswired. Say what was wrong and whether it was fixed.' });
+    if (p.status === 'tested' && phaseDone(def, p, 'u') && phaseDone(def, p, 'm') && p.ssdLeft !== 'conn') out.push({ lvl: 'warn', msg: p.ssdLeft ? 'SSD left ' + (p.ssdLeft === 'disc' ? 'disconnected' : 'miswired') + '.' : 'Both surveys done. Record whether the SSD was left connected.' });
+  }
+  (p.leads || []).forEach((l, i) => { if (l.cond === 'broken' || l.cond === 'disc') out.push({ lvl: 'warn', msg: 'Test lead ' + (l.color || (i + 1)) + (l.to ? ' to ' + l.to.toLowerCase() : '') + ' is ' + (l.cond === 'broken' ? 'broken' : 'disconnected') + '.' }); });
+  return out;
+}
+
+// ---------- rendering ----------
+function render() {
+  const keepY = view.keepScroll ? window.scrollY : 0; view.keepScroll = false;
+  revokeThumbs();
+  const app = $('#app');
+  if (view.name === 'home' || !job) app.innerHTML = homeHtml();
+  else if (view.name === 'point') app.innerHTML = pointHtml(view.id);
+  else app.innerHTML = jobHtml();
+  $('#bar').hidden = !(job && view.name !== 'home');
+  updateBar();
+  if (view.name === 'point') loadThumbs(view.id);
+  window.scrollTo(0, keepY);
+}
+function updateBar() {
+  if (!job) return;
+  const pts = allPoints(), done = pts.filter(pointDone).length;
+  $('#barStatus').textContent = job.line + ': ' + done + ' of ' + pts.length + ' test points done';
+}
+
+function homeHtml() {
+  const list = jobsList();
+  let h = '<div class="top"><div><h1>Commissioning Survey</h1><div class="sub">Infinity Corrosion Group field app</div></div></div>';
+  if (pending && pending.kind === 'restore') h += confirmHtml();
+  if (list.length) {
+    h += '<div class="card"><h2>Jobs on this phone</h2><div class="stack">' + list.map(j => '<div class="btns" style="justify-content:space-between;align-items:center"><button class="btn" style="flex:1;justify-content:flex-start" data-act="open" data-id="' + esc(j.id) + '"><b>' + esc(j.line) + '</b>&nbsp;<span class="sub">' + esc(j.title || '') + '</span></button></div>').join('') + '</div></div>';
+  }
+  h += '<div class="card"><h2>Start a job</h2><div class="stack">' +
+    '<label class="btn primary">Load job file<input type="file" accept=".json,application/json" data-file="job"></label>' +
+    '<div class="hint">ICG sends the job file for each line. It holds the test point list from the IFC drawings and stays on this phone.</div>' +
+    '<label class="btn">Restore from a saved package<input type="file" accept=".zip,.json,application/zip,application/json" data-file="restore"></label>' +
+    '<div class="hint">Use this to move a job to another phone or get back saved answers. A .zip brings the photos too.</div>' +
+    '<div class="row2"><input type="text" id="blankLine" placeholder="Line, e.g. FL-30" autocomplete="off"><button class="btn" data-act="blank">Start blank job</button></div>' +
+    '<button class="btn ghost" data-act="demo">Try the demo job</button>' +
+    '</div></div>';
+  h += '<p class="sub">Version ' + APP_VERSION + '. Readings and photos are saved on this phone only until you save a package.</p>';
+  return h;
+}
+function confirmHtml() {
+  return '<div class="confirm"><p>' + esc(pending.msg) + '</p><div class="btns"><button class="btn primary" data-act="confirm-yes">' + esc(pending.yes || 'Replace') + '</button><button class="btn" data-act="confirm-no">Cancel</button></div></div>';
+}
+
+function phaseBar(back) {
+  const ph = st.phase;
+  return '<div class="phasebar"><div class="pbrow">' + (back ? '<button class="btn pback" data-act="job" aria-label="Back to all test points">← Test Points</button>' : '') + '<div class="seg" role="group" aria-label="Survey">' +
+    ['unmit', 'mit'].map(k => '<button data-act="phase" data-ph="' + k + '" aria-pressed="' + (ph === k) + '">' + PH[k] + '</button>').join('') + '</div></div>' +
+    '<div class="hint">' + (ph === 'unmit' ? 'New SSD switches open. Record before mitigation is connected.' : 'New SSD switches closed. Mitigation connected.') + '</div></div>';
+}
+
+function jobHtml() {
+  const pts = allPoints(), crew = (job.crew || []).concat(st.crewExtra || []);
+  const nU = pts.filter(d => ps(d.id).status === 'tested' && TYPES[d.type] && TYPES[d.type].phase.length && phaseDone(d, ps(d.id), 'u')).length;
+  const nM = pts.filter(d => ps(d.id).status === 'tested' && TYPES[d.type] && TYPES[d.type].phase.length && phaseDone(d, ps(d.id), 'm')).length;
+  const nW = pts.reduce((a, d) => a + checks(d).filter(w => w.lvl !== 'info').length, 0);
+  let h = '<div class="top"><div><button class="back" data-act="home">All jobs</button><h1>' + esc(job.line) + ' ' + esc(job.client || '') + '</h1><div class="sub">' + esc(job.title || '') + (job.location ? '. ' + esc(job.location) : '') + '</div></div></div>';
+  if (job.demo) h += '<div class="demo">Demo job with made-up test points. Use it to practice, then delete it in Job settings.</div>';
+  h += phaseBar();
+  h += drawingsButton(null);
+  h += '<div class="card"><h2>Who is testing</h2><div class="chips">' + crew.map(c => '<button data-act="tech" data-v="' + esc(c) + '" aria-pressed="' + (st.tech.indexOf(c) >= 0) + '">' + esc(c) + '</button>').join('') + '</div>' +
+    '<div class="row2" style="margin-top:8px"><input type="text" id="newTech" placeholder="Add a name" autocomplete="off"><button class="btn small" data-act="addtech">Add</button></div></div>';
+  h += '<div class="summary"><div><b>' + nU + '/' + pts.filter(d => TYPES[d.type] && TYPES[d.type].phase.length).length + '</b><span>Unmitigated done</span></div><div><b>' + nM + '/' + pts.filter(d => TYPES[d.type] && TYPES[d.type].phase.length).length + '</b><span>Mitigated done</span></div><div><b>' + nW + '</b><span>Items to check</span></div></div>';
+  const ssds = pts.filter(d => d.type === 'ssd' && ps(d.id).status === 'tested'), nLeft = ssds.filter(d => ps(d.id).ssdLeft === 'conn').length, nDiff = pts.filter(d => ps(d.id).match === 'no').length;
+  if (ssds.length || nDiff) h += '<div class="hint" style="margin-top:10px">' + (ssds.length ? '<b>SSDs left connected: ' + nLeft + ' of ' + ssds.length + '</b>' : '') + (ssds.length && nDiff ? '. ' : '') + (nDiff ? nDiff + ' test point' + (nDiff > 1 ? 's differ' : ' differs') + ' from the drawings' : '') + '</div>';
+  h += '<div class="card"><div class="btns" style="justify-content:space-between;align-items:center;margin-bottom:10px"><span class="h2" style="margin:0">Test points</span><div class="seg small"><button data-act="sort" data-v="drawing" aria-pressed="' + (st.sort !== 'near') + '">Drawing order</button><button data-act="sort" data-v="near" aria-pressed="' + (st.sort === 'near') + '">Nearest</button></div></div>';
+  let list = pts.slice();
+  if (st.sort === 'near' && here) list.sort((a, b) => (distFt(here.lat, here.lon, a.lat, a.lon) ?? 1e12) - (distFt(here.lat, here.lon, b.lat, b.lon) ?? 1e12));
+  if (st.sort === 'near' && !here) h += '<div class="hint" style="margin-bottom:8px">Finding your location...</div>';
+  h += '<div class="plist">' + list.map(d => ptRow(d)).join('') + '</div>';
+  h += '<div style="margin-top:12px"><button class="btn" data-act="addpt-open">Add a test point not on the drawings</button></div>';
+  if (view.addOpen) h += addPointHtml();
+  h += '</div>';
+  h += settingsHtml();
+  return h;
+}
+function ptRow(d) {
+  const p = ps(d.id), T = TYPES[d.type] || { name: d.type, phase: [] }, w = checks(d), bad = w.some(x => x.lvl === 'bad'), nw = w.filter(x => x.lvl !== 'info').length;
+  let pills = '';
+  if (p.status !== 'tested') pills += '<span class="pill off">' + STATUS.find(s => s[0] === p.status)[1] + '</span>';
+  else if (T.phase.length) { if (phaseDone(d, p, 'u')) pills += '<span class="pill u">U</span>'; if (phaseDone(d, p, 'm')) pills += '<span class="pill m">M</span>'; }
+  else if (phaseDone(d, p, 'x')) pills += '<span class="pill good">Done</span>';
+  if (nw) pills += '<span class="pill ' + (bad ? 'bad' : 'warn') + '">' + nw + ' check</span>';
+  if (p.match === 'no') pills += '<span class="pill off">differs</span>';
+  const nPh = (p.photos || 0);
+  if (nPh) pills += '<span class="pill off">' + nPh + ' ph</span>';
+  const dist = here ? distFt(here.lat, here.lon, d.lat, d.lon) : null;
+  const vals = [];
+  if (p.u.ac) vals.push('U <span class="val">' + esc(p.u.ac) + '</span> VAC');
+  if (p.m.ac) vals.push('M <span class="val">' + esc(p.m.ac) + '</span> VAC');
+  if (p.m.ssd_a) vals.push('SSD <span class="val">' + esc(p.m.ssd_a) + '</span> A');
+  if (dist != null) vals.push(fmtFt(dist) + ' away');
+  return '<button class="pt" data-act="pt" data-id="' + esc(d.id) + '"><div><div class="id">' + esc(d.id) + (d.added ? ' <span class="pill off">added</span>' : '') + (d.tag ? ' <span class="sub">(' + esc(d.tag) + ')</span>' : '') + '</div><div class="ty">' + esc(T.name) + (d.mit ? ', ' + esc(d.mit) : '') + (d.sheet ? ', sheet ' + esc(d.sheet) : '') + '</div></div><div class="right">' + pills + '</div>' + (vals.length ? '<div class="vals">' + vals.join('<span>·</span>') + '</div>' : '') + '</button>';
+}
+function addPointHtml() {
+  return '<div class="leg" style="margin-top:10px"><div class="stack">' +
+    '<div class="row2"><div class="f"><label class="lbl" for="apId">Point ID</label><input type="text" id="apId" placeholder="e.g. SSD 19B" autocomplete="off"></div>' +
+    '<div class="f"><label class="lbl" for="apType">Type</label><select id="apType">' + Object.keys(TYPES).map(k => '<option value="' + k + '">' + TYPES[k].name + '</option>').join('') + '</select></div></div>' +
+    '<div class="row2"><div class="f"><label class="lbl" for="apMit">Mitigation ID</label><input type="text" id="apMit" placeholder="optional" autocomplete="off"></div>' +
+    '<div class="f"><label class="lbl" for="apNote">Note</label><input type="text" id="apNote" placeholder="optional" autocomplete="off"></div></div>' +
+    '<div class="btns"><button class="btn primary" data-act="addpt">Add test point</button><button class="btn" data-act="addpt-cancel">Cancel</button></div></div></div>';
+}
+function settingsHtml() {
+  const o = job.options || {};
+  let h = '<div class="card"><details' + (view.settingsOpen ? ' open' : '') + ' data-det="settings"><summary>Job settings</summary><div class="stack">';
+  h += '<div><span class="lbl">Show the scan tip on readings</span><div class="seg small"><button data-act="opt" data-k="scanTip" data-v="1" aria-pressed="' + !!o.scanTip + '">Yes</button><button data-act="opt" data-k="scanTip" data-v="" aria-pressed="' + !o.scanTip + '">No, typing only</button></div><div class="hint">Readings can be scanned off the meter with the phone camera instead of typed.</div></div>';
+  h += '<div><span class="lbl">Record DC OFF potentials</span><div class="seg small"><button data-act="opt" data-k="offReadings" data-v="1" aria-pressed="' + !!o.offReadings + '">Yes, rectifiers interrupted</button><button data-act="opt" data-k="offReadings" data-v="" aria-pressed="' + !o.offReadings + '">No</button></div></div>';
+  h += '<div class="row2"><div class="f"><label class="lbl" for="optArea">Coupon area (cm²)</label><input type="text" inputmode="decimal" id="optArea" data-opt="couponAreaCm2" value="' + esc(o.couponAreaCm2 || 1) + '"></div>';
+  h += '<div class="f"><label class="lbl" for="optTol">GPS warning distance (ft)</label><input type="text" inputmode="decimal" id="optTol" data-opt="gpsTolFt" value="' + esc(o.gpsTolFt || 50) + '"></div></div>';
+  if (job.drawing) h += '<div class="hint">Drawings: ' + esc(job.drawing) + (job.wo ? '. WO ' + esc(job.wo) : '') + '</div>';
+  if (job.notes) h += '<div class="hint">' + esc(job.notes) + '</div>';
+  const dw = st.drawings || [];
+  h += '<div><span class="lbl">Drawings on this phone</span>' + (dw.length ? dw.map((f, i) => '<div class="btns" style="align-items:center;justify-content:space-between;margin-bottom:6px"><span>' + esc(f.name) + ' <span class="sub">(' + f.pages + ' pages, ' + (f.size / 1048576).toFixed(1) + ' MB)</span></span><button class="btn small ghost danger" data-act="dwgdel" data-i="' + i + '">Remove</button></div>').join('') : '<div class="hint" style="margin-bottom:6px">None yet. Add the IFC drawing PDF so the Drawings button works with no signal.</div>') +
+    '<label class="btn small">Add drawings (PDF)<input type="file" accept=".pdf,application/pdf" data-file="drawings" multiple></label></div>';
+  h += '<div class="btns"><label class="btn small">Load an updated job file<input type="file" accept=".json,application/json" data-file="job"></label><label class="btn small">Restore from a package<input type="file" accept=".zip,.json" data-file="restore"></label></div>';
+  if (pending && pending.kind === 'deljob') h += confirmHtml();
+  else h += '<div><button class="btn small danger" data-act="deljob">Delete this job from the phone</button></div>';
+  h += '<div class="hint">Survey dates so far: ' + (st.dates.length ? esc(st.dates.join(', ')) : 'none yet') + '</div>';
+  h += '</div></details></div>';
+  return h;
+}
+
+function numField(path, key, val, sgnState) {
+  const f = F[key]; const id = 'f_' + path.replace(/\W/g, '_');
+  const lab = '<label class="lbl" for="' + id + '">' + esc(f.l) + (f.u ? ' <span>(' + esc(f.u) + ')</span>' : '') + '</label>';
+  if (f.text) return '<div class="f">' + lab + '<input type="text" id="' + id + '" data-bind="' + path + '" value="' + esc(val) + '" autocomplete="off"></div>';
+  return '<div class="f">' + lab + numInput(id, path, val, f.sign, sgnState) + '</div>';
+}
+function numInput(id, path, val, sign, sgnState) {
+  const v = val == null ? '' : String(val);
+  if (!sign) return '<div class="num nosign"><input type="text" inputmode="decimal" id="' + id + '" data-bind="' + path + '" value="' + esc(v) + '" autocomplete="off"></div>';
+  const neg = v ? v.trim().startsWith('-') : (sgnState ? sgnState === '-' : true);
+  return '<div class="num"><button type="button" class="sgn' + (neg ? '' : ' pos') + '" data-act="sign" data-path="' + path + '" aria-label="Toggle sign, now ' + (neg ? 'minus' : 'plus') + '">' + (neg ? '−' : '+') + '</button><input type="text" inputmode="decimal" id="' + id + '" data-bind="' + path + '" data-sign="1" value="' + esc(v.replace(/^\s*[-+]/, '')) + '" autocomplete="off"></div>';
+}
+function phaseCard(def, p, k) {
+  const T = TYPES[def.type], o = job.options || {}, key = PK[k];
+  let fields = T.phase.filter(f => !(F[f].opt === 'off' && !o.offReadings));
+  if (k === 'mit' && T.mitOnly) fields = fields.concat(T.mitOnly);
+  let h = (o.scanTip ? '<div class="hint" style="margin:-4px 0 10px">To scan instead of type: tap a box, tap it again, choose Scan Text (iPhone) or the scan button on the keyboard, point at the meter, then Insert. Check the number before moving on.</div>' : '') +
+    '<div class="grid">' + fields.map(f => numField(key + '.' + f, f, p[key][f], p.sg[key + '.' + f])).join('') + '</div>';
+  if (def.type === 'cts') { const j = density(p[key].c_iac); if (j != null) h += '<div class="hint">AC current density: <b class="mono">' + j.toFixed(2) + ' A/m²</b> (coupon ' + esc(o.couponAreaCm2 || 1) + ' cm²)</div>'; }
+  h += extraRows(p, key);
+  const by = p.by[key];
+  if (by) h += '<div class="hint">First reading ' + new Date(by.t).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + (by.tech ? ' by ' + esc(by.tech) : '') + '</div>';
+  return h;
+}
+function extraRows(p, key) {
+  const rows = p.extra[key] || [];
+  let h = '<div style="margin-top:10px"><span class="lbl" style="font-size:13px;color:var(--muted)">Other readings (anode current, shunt mV, casing, foreign line...)</span>';
+  h += rows.map((r, i) => '<div class="xrow"><input type="text" placeholder="What" data-bind="extra.' + key + '.' + i + '.what" value="' + esc(r.what) + '" aria-label="Reading name"><input type="text" inputmode="decimal" placeholder="Value" class="mono" data-bind="extra.' + key + '.' + i + '.val" value="' + esc(r.val) + '" aria-label="Value"><input type="text" placeholder="Unit" data-bind="extra.' + key + '.' + i + '.unit" value="' + esc(r.unit) + '" aria-label="Unit"><button data-act="xdel" data-k="' + key + '" data-i="' + i + '" aria-label="Remove">×</button></div>').join('');
+  h += '<button class="btn small" style="margin-top:6px" data-act="xadd" data-k="' + key + '">Add a reading</button></div>';
+  return h;
+}
+
+function pointHtml(id) {
+  const def = pointDef(id); if (!def) { view = { name: 'job' }; return jobHtml(); }
+  const p = ps(id), T = TYPES[def.type] || TYPES.ts, pts = allPoints(), idx = pts.findIndex(x => x.id === id);
+  let h = '<div class="top"><div><button class="back" data-act="job">' + esc(job.line) + ' test points</button><h1>' + esc(def.id) + '</h1><div class="sub">' + esc(T.name) + (def.mit ? ', ' + esc(def.mit) : '') + '</div></div></div>';
+  h += phaseBar(true);
+  // design info
+  h += '<div class="card"><h2>From the drawings</h2><dl class="design">';
+  if (def.mit) h += '<dt>Mitigation</dt><dd>' + esc(def.mit) + '</dd>';
+  if (def.rating) h += '<dt>SSD</dt><dd>' + esc(def.rating) + '</dd>';
+  if (def.legs && def.legs.length) h += '<dt>Grounding</dt><dd>' + def.legs.map(l => esc(l.label) + (l.len ? ', ' + esc(l.len) + ' ft' : '')).join('<br>') + '</dd>';
+  if (def.sheet) h += '<dt>Sheet</dt><dd>' + esc(def.sheet) + '</dd>';
+  if (def.lat != null) h += '<dt>Design GPS</dt><dd class="mono">' + def.lat.toFixed(6) + ', ' + def.lon.toFixed(6) + '</dd>';
+  if (def.note) h += '<dt>Note</dt><dd>' + esc(def.note) + '</dd>';
+  h += '</dl>';
+  h += drawingsButton(def);
+  if (def.lat != null) h += '<div class="btns" style="margin-top:10px"><a class="btn small" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=' + def.lat + ',' + def.lon + '">Directions (Google)</a><a class="btn small" target="_blank" rel="noopener" href="https://maps.apple.com/?daddr=' + def.lat + ',' + def.lon + '">Directions (Apple)</a></div>';
+  h += '</div>';
+  // status + gps
+  h += '<div class="card"><h2>Status</h2><div class="seg">' + STATUS.map(s => '<button data-act="status" data-v="' + s[0] + '" data-tone="' + s[2] + '" aria-pressed="' + (p.status === s[0]) + '">' + s[1] + '</button>').join('') + '</div>';
+  h += '<div class="gpsrow" style="margin-top:12px"><button class="btn" data-act="gps">' + (p.gps ? 'Recapture GPS' : 'Capture GPS here') + '</button>';
+  if (p.gps) { const d = distFt(def.lat, def.lon, p.gps.lat, p.gps.lon); h += '<div><div class="val">' + p.gps.lat.toFixed(6) + ', ' + p.gps.lon.toFixed(6) + '</div><div class="hint">±' + Math.round(p.gps.acc * 3.281) + ' ft' + (d != null ? ', ' + fmtFt(d) + ' from design' : '') + '</div></div>'; }
+  h += '</div></div>';
+  // checks (live)
+  h += '<div id="warnBox">' + warnHtml(def) + '</div>';
+  // readings by phase, current first
+  if (T.phase.length) {
+    const order = st.phase === 'unmit' ? ['unmit', 'mit'] : ['mit', 'unmit'];
+    order.forEach((k, i) => {
+      if (i === 0) h += '<div class="card ' + k + '"><h2>' + PH[k] + ' readings</h2>' + phaseCard(def, p, k) + '</div>';
+      else h += '<div class="card ' + k + '"><details data-det="ph-' + k + '"' + (isOpen('ph-' + k, false) ? ' open' : '') + '><summary>' + PH[k] + ' readings' + (phaseDone(def, p, PK[k]) ? ' (done)' : '') + '</summary>' + phaseCard(def, p, k) + '</details></div>';
+    });
+  }
+  if (T.legs) h += legsHtml(def, p, T.legs);
+  if ((T.once && T.once.length) || T.result) {
+    h += '<div class="card"><h2>' + (T.phase.length ? 'Other readings' : 'Readings') + '</h2>' + (T.once && T.once.length ? '<div class="grid">' + T.once.map(f => numField('x.' + f, f, p.x[f], p.sg['x.' + f])).join('') + '</div>' : '');
+    if (T.result) h += '<div style="margin-top:10px"><span class="lbl">' + esc(T.result.label) + '</span><div class="seg">' + T.result.opts.map(o => '<button data-act="setx" data-k="' + T.result.key + '" data-v="' + o[0] + '" data-tone="' + o[2] + '" aria-pressed="' + (p.x[T.result.key] === o[0]) + '">' + o[1] + '</button>').join('') + '</div></div>';
+    if (def.type === 'rect') { const v = num(p.x.rect_v), a = num(p.x.rect_a); if (v != null && a) h += '<div class="hint">Circuit resistance: <b class="mono">' + (v / a).toFixed(3) + ' ohms</b></div>'; }
+    if (!T.phase.length) h += extraRows(p, 'x');
+    h += '</div>';
+  }
+  if (T.metricorr) h += metricorrHtml(p);
+  if (def.type === 'ssd') h += ssdStateHtml(p);
+  h += fieldChangesHtml(def, p);
+  if (T.checks.length) {
+    h += '<div class="card"><div class="btns" style="justify-content:space-between;align-items:center;margin-bottom:10px"><span class="h2" style="margin:0">Checklist</span><button class="btn small" data-act="chkall">All OK</button></div><div class="chk">' + T.checks.map((c, i) => '<div class="row"><span>' + esc(c) + '</span><div class="seg small"><button data-act="chk" data-i="' + i + '" data-v="y" data-tone="good" aria-pressed="' + (p.chk[i] === 'y') + '">Yes</button><button data-act="chk" data-i="' + i + '" data-v="n" data-tone="warn" aria-pressed="' + (p.chk[i] === 'n') + '">No</button><button data-act="chk" data-i="' + i + '" data-v="na" aria-pressed="' + (p.chk[i] === 'na') + '">N/A</button></div></div>').join('') + '</div></div>';
+  }
+  h += photosHtml(def, T);
+  h += '<div class="card"><h2>Remarks</h2><textarea id="rem" data-bind="rem" placeholder="Notes for the report. Goes in the Inspection Remarks column.">' + esc(p.rem) + '</textarea></div>';
+  h += '<div class="nav2">' + (idx > 0 ? '<button class="btn" data-act="pt" data-id="' + esc(pts[idx - 1].id) + '">← ' + esc(pts[idx - 1].id) + '</button>' : '<span></span>') + (idx < pts.length - 1 ? '<button class="btn" data-act="pt" data-id="' + esc(pts[idx + 1].id) + '">' + esc(pts[idx + 1].id) + ' →</button>' : '') + '</div>';
+  if (def.added) h += '<div style="margin-top:16px">' + (pending && pending.kind === 'delpt' ? confirmHtml() : '<button class="btn small danger" data-act="delpt">Remove this added test point</button>') + '</div>';
+  return h;
+}
+function ssdStateHtml(p) {
+  const seg = k => '<div class="seg">' + SSD_STATE.map(s => '<button data-act="setp" data-k="' + k + '" data-v="' + s[0] + '" data-tone="' + s[2] + '" aria-pressed="' + (p[k] === s[0]) + '">' + s[1] + '</button>').join('') + '</div>';
+  return '<div class="card"><h2>SSD switch</h2><div class="stack"><div><span class="lbl">As found (first pass)</span>' + seg('ssdFound') + '</div><div><span class="lbl">Left when done</span>' + seg('ssdLeft') + '</div></div></div>';
+}
+function leadsHtml(p) {
+  const L = p.leads || [];
+  if (!L.length) return '<div><button class="btn small" data-act="leadadd">Record test leads</button><div class="hint">Only when the leads are wrong, extra or missing.</div></div>';
+  let h = '<div><span class="lbl">Test leads</span><div class="legs">';
+  L.forEach((l, i) => {
+    h += '<div class="leg"><div class="row2"><div class="f"><label class="lbl" for="ldc' + i + '">Color or tag</label><input type="text" id="ldc' + i + '" data-bind="leads.' + i + '.color" value="' + esc(l.color) + '" placeholder="e.g. White" autocomplete="off"></div>' +
+      '<div class="f"><label class="lbl" for="lds' + i + '">Size</label><input type="text" id="lds' + i + '" data-bind="leads.' + i + '.size" value="' + esc(l.size) + '" placeholder="e.g. #12" autocomplete="off"></div></div>' +
+      '<div class="f" style="margin-top:8px"><label class="lbl" for="ldt' + i + '">Goes to</label><select id="ldt' + i + '" data-bind="leads.' + i + '.to"><option value="">Pick one</option>' + LEAD_TO.map(o => '<option' + (l.to === o ? ' selected' : '') + '>' + o + '</option>').join('') + '</select></div>' +
+      '<div class="btns" style="margin-top:8px;justify-content:space-between;align-items:center"><div class="seg small">' + LEAD_COND.map(c => '<button data-act="leadcond" data-i="' + i + '" data-v="' + c[0] + '" data-tone="' + c[2] + '" aria-pressed="' + (l.cond === c[0]) + '">' + c[1] + '</button>').join('') + '</div><button class="btn small ghost" data-act="leaddel" data-i="' + i + '">Remove</button></div></div>';
+  });
+  h += '</div><div class="btns" style="margin-top:8px"><button class="btn small" data-act="leadadd">Add a lead</button><button class="btn small" data-act="leadcopy">Copy last</button></div></div>';
+  return h;
+}
+function fieldChangesHtml(def, p) {
+  const o = p.ov || {}, used = p.match === 'no' || (p.leads && p.leads.length) || o.type || o.mit || o.tag || o.note;
+  let h = '<div class="card"><details data-det="fc"' + (isOpen('fc', used) ? ' open' : '') + '><summary>Different from the drawings?' + (used ? ' (recorded)' : '') + '</summary><div class="stack"><div><span class="lbl">Matches the drawings?</span><div class="seg"><button data-act="setp" data-k="match" data-v="yes" data-tone="good" aria-pressed="' + (p.match === 'yes') + '">Yes</button><button data-act="setp" data-k="match" data-v="no" data-tone="warn" aria-pressed="' + (p.match === 'no') + '">No, differs</button></div></div>';
+  if (p.match === 'no') h += '<div class="f"><label class="lbl" for="diff">What is different</label><textarea id="diff" data-bind="diff" placeholder="e.g. SSD is 40 ft east of the drawing location, two copper leads not one">' + esc(p.diff) + '</textarea></div>';
+  h += '<details data-det="fcd"' + (isOpen('fcd', o.type || o.mit || o.tag || o.note) ? ' open' : '') + '><summary>Correct the point details</summary><div class="stack">' +
+    '<div class="row2"><div class="f"><label class="lbl" for="ovType">Type' + (def.drawingType && def.drawingType !== def.type ? ' (drawings: ' + esc(TYPES[def.drawingType] ? TYPES[def.drawingType].name : def.drawingType) + ')' : '') + '</label><select id="ovType" data-ovtype="1">' + Object.keys(TYPES).map(k => '<option value="' + k + '"' + (def.type === k ? ' selected' : '') + '>' + TYPES[k].name + '</option>').join('') + '</select></div>' +
+    '<div class="f"><label class="lbl" for="ovTag">Label on the station</label><input type="text" id="ovTag" data-bind="ov.tag" value="' + esc(o.tag) + '" placeholder="if not ' + esc(def.id) + '" autocomplete="off"></div></div>' +
+    '<div class="row2"><div class="f"><label class="lbl" for="ovMit">Mitigation ID</label><input type="text" id="ovMit" data-bind="ov.mit" value="' + esc(o.mit) + '" placeholder="' + esc(def.mit || '') + '" autocomplete="off"></div>' +
+    '<div class="f"><label class="lbl" for="ovNote">Note</label><input type="text" id="ovNote" data-bind="ov.note" value="' + esc(o.note) + '" placeholder="' + esc(def.note || '') + '" autocomplete="off"></div></div>' +
+    '<div class="hint">Changes here are saved with the readings. The drawing values stay in the job file.</div></div></details>' +
+    leadsHtml(p) + '</div></details></div>';
+  return h;
+}
+function sheetNum(def) { const m = def && def.sheet ? String(def.sheet).match(/\d+/) : null; return m ? Number(m[0]) : 1; }
+function drawingsButton(def) {
+  const dw = st.drawings || [];
+  if (!dw.length) return def ? '' : '<div style="margin-top:10px"><button class="btn small" data-act="dwgadd-hint">Drawings</button></div>';
+  const s = sheetNum(def);
+  return '<div class="btns" style="margin-top:10px"><button class="btn small primary" data-act="dwgopen" data-p="' + s + '">Drawings' + (def && def.sheet ? ', sheet ' + esc(def.sheet) : '') + '</button></div>';
+}
+// ---------- drawing viewer (pdf.js loaded only when first opened) ----------
+let pdfLib = null, viewer = null;
+function loadPdfJs() {
+  if (pdfLib) return Promise.resolve(pdfLib);
+  return new Promise((res, rej) => {
+    const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+    s.onload = () => { pdfLib = window.pdfjsLib; pdfLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; res(pdfLib); };
+    s.onerror = () => rej(new Error('The drawing viewer needs a signal the first time it opens. Try again once you have service.'));
+    document.head.appendChild(s);
+  });
+}
+async function openViewer(page, fileIdx) {
+  const dw = st.drawings || []; if (!dw.length) return;
+  const fi = Math.min(fileIdx || 0, dw.length - 1);
+  toast('Opening drawings...', 8000);
+  try {
+    const lib = await loadPdfJs();
+    const rec = await getFile(dw[fi].key); if (!rec) throw new Error('The drawing file is missing on this phone. Add it again in Job settings.');
+    const doc = await lib.getDocument({ data: new Uint8Array(rec.bytes.slice(0)) }).promise;
+    viewer = { doc, fi, page: Math.min(Math.max(1, page || 1), doc.numPages), zoom: 1 };
+    let ov = document.getElementById('dwg');
+    if (!ov) { ov = document.createElement('div'); ov.id = 'dwg'; ov.className = 'dwg'; document.body.appendChild(ov); }
+    ov.hidden = false; document.body.style.overflow = 'hidden';
+    $('#toast').hidden = true;
+    await drawViewer();
+  } catch (e) { toast('Could not open the drawings: ' + (e && e.message ? e.message : e), 7000); }
+}
+let dwgResizeT;
+window.addEventListener('resize', () => { if (!viewer) return; clearTimeout(dwgResizeT); dwgResizeT = setTimeout(drawViewer, 250); });
+async function drawViewer() {
+  const ov = document.getElementById('dwg'), v = viewer, dw = st.drawings || [];
+  ov.innerHTML = '<div class="dwg-bar"><button class="btn small" data-act="dwgclose">Close</button>' +
+    (dw.length > 1 ? '<select id="dwgFile" aria-label="Drawing set">' + dw.map((f, i) => '<option value="' + i + '"' + (i === v.fi ? ' selected' : '') + '>' + esc(f.name) + '</option>').join('') + '</select>' : '<span class="dwg-name">' + esc(dw[v.fi].name) + '</span>') +
+    '<div class="dwg-ctl"><button class="btn small" data-act="dwgpage" data-d="-1" aria-label="Previous sheet"' + (v.page <= 1 ? ' disabled' : '') + '>‹</button><span class="mono">' + v.page + ' / ' + v.doc.numPages + '</span><button class="btn small" data-act="dwgpage" data-d="1" aria-label="Next sheet"' + (v.page >= v.doc.numPages ? ' disabled' : '') + '>›</button>' +
+    '<button class="btn small" data-act="dwgzoom" data-d="-1" aria-label="Zoom out"' + (v.zoom <= 1 ? ' disabled' : '') + '>−</button><button class="btn small" data-act="dwgzoom" data-d="1" aria-label="Zoom in"' + (v.zoom >= 4 ? ' disabled' : '') + '>+</button></div></div>' +
+    '<div class="dwg-scroll" id="dwgScroll"><canvas id="dwgCanvas"></canvas>' + (window.innerHeight > window.innerWidth ? '<div class="hint" style="padding:10px 12px">Turn the phone sideways for a bigger view. Use + to zoom in.</div>' : '') + '</div>';
+  const page = await v.doc.getPage(v.page);
+  const box = document.getElementById('dwgScroll');
+  const base = page.getViewport({ scale: 1 });
+  const fit = Math.min(box.clientWidth / base.width, (box.clientHeight || 600) / base.height);
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let scale = fit * v.zoom * dpr;
+  const maxPx = 16000000; // stay under the iPhone canvas limit
+  if (base.width * base.height * scale * scale > maxPx) scale = Math.sqrt(maxPx / (base.width * base.height));
+  const vp = page.getViewport({ scale });
+  const c = document.getElementById('dwgCanvas'); c.width = Math.floor(vp.width); c.height = Math.floor(vp.height);
+  c.style.width = Math.floor(vp.width / dpr) + 'px'; c.style.height = Math.floor(vp.height / dpr) + 'px';
+  await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+}
+function warnHtml(def) {
+  const w = checks(def); if (!w.length) return '';
+  return '<div class="card"><h2>Check before you leave</h2><div class="warns">' + w.map(x => '<div class="w ' + x.lvl + '">' + esc(x.msg) + '</div>').join('') + '</div></div>';
+}
+function legsHtml(def, p, title) {
+  let h = '<div class="card unmit"><h2>' + esc(title) + '</h2><div class="hint" style="margin:-4px 0 10px">Measure with the SSD open. Potential to a portable CSE, then the 4-pin resistance to the pipe, twice.</div><div class="legs">';
+  (p.legs || []).forEach((l, i) => {
+    h += '<div class="leg"><div class="head"><input type="text" data-bind="legs.' + i + '.label" value="' + esc(l.label) + '" placeholder="Label" aria-label="Leg label"><div class="num nosign" style="flex:0 0 110px"><input type="text" inputmode="decimal" data-bind="legs.' + i + '.len" value="' + esc(l.len) + '" placeholder="Length" aria-label="Length in feet"><span class="unit">ft</span></div></div>' +
+      '<div class="grid">' +
+      '<div class="f"><label class="lbl" for="lp' + i + '">Potential (V)</label>' + numInput('lp' + i, 'legs.' + i + '.pot', l.pot, 'neg', p.sg['legs.' + i + '.pot']) + '</div>' +
+      '<div class="f"><label class="lbl" for="lr1' + i + '">To pipe, 1st (Ω)</label>' + numInput('lr1' + i, 'legs.' + i + '.r1', l.r1) + '</div>' +
+      '<div class="f"><label class="lbl" for="lr2' + i + '">To pipe, 2nd (Ω)</label>' + numInput('lr2' + i, 'legs.' + i + '.r2', l.r2) + '</div>' +
+      '</div></div>';
+  });
+  h += '</div><button class="btn small" style="margin-top:8px" data-act="legadd">Add a lead</button></div>';
+  return h;
+}
+function metricorrHtml(p) {
+  const e = p.er || {};
+  const t = (k, l, ph) => '<div class="f"><label class="lbl" for="er_' + k + '">' + l + '</label><input type="text" id="er_' + k + '" class="mono" data-bind="er.' + k + '" value="' + esc(e[k]) + '" placeholder="' + (ph || '') + '" autocomplete="off" autocapitalize="characters"></div>';
+  const dir = k => '<div class="seg small">' + ['N', 'S', 'E', 'W'].map(d => '<button data-act="erdir" data-k="' + k + '" data-v="' + d + '" aria-pressed="' + (e[k] === d) + '">' + d + '</button>').join('') + '</div>';
+  return '<div class="card"><h2>MetriCorr</h2><div class="grid">' + t('am', 'Logger (AM) S/N', 'AM...') + t('al', 'MasterLink (AL) S/N', 'AL...') + t('er1', 'ER1 probe S/N', 'Pi...') + t('er2', 'ER2 probe S/N', 'Pi...') + '</div>' +
+    '<div class="row2" style="margin-top:10px"><div><span class="lbl" style="font-size:13px;color:var(--muted)">ER1 direction</span>' + dir('er1d') + '</div><div><span class="lbl" style="font-size:13px;color:var(--muted)">ER2 direction</span>' + dir('er2d') + '</div></div>' +
+    '<div style="margin-top:12px"><span class="lbl">Status light after pressing the button</span><div class="hint" style="margin:0 0 8px">Press the status button on the MasterLink and let go right away. Short flash every 8 seconds = Waiting (on and ready). One flash a second = Searching for the network. Three quick flashes = Transmitting.</div><div class="seg">' +
+      [['waiting', 'Waiting (ready)', 'good'], ['searching', 'Searching', ''], ['transmitting', 'Transmitting', ''], ['none', 'No light or off', 'warn']].map(s => '<button data-act="erset" data-k="led" data-v="' + s[0] + '" data-tone="' + s[2] + '" aria-pressed="' + (e.led === s[0]) + '">' + s[1] + '</button>').join('') + '</div></div>' +
+    '<div class="gpsrow" style="margin-top:10px"><button class="btn small" data-act="pwrnow">' + (e.pwr ? 'Update power-up time' : 'Powered up now') + '</button>' + (e.pwr ? '<span class="val">' + new Date(e.pwr).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + '</span>' : '<span class="hint">ICG uses this time to find the unit on the MetriCorr site and activate it.</span>') + '</div>' +
+    '<div class="f" style="margin-top:10px"><label class="lbl" for="er_note">MetriCorr notes</label><input type="text" id="er_note" data-bind="er.note" value="' + esc(e.note) + '" placeholder="e.g. only probe 1 showing" autocomplete="off"></div></div>';
+}
+function photosHtml(def, T) {
+  const slots = T.photos.concat(['Other']);
+  return '<div class="card"><h2>Photos</h2><div class="hint" style="margin:-4px 0 10px"><b>Hold the phone sideways (landscape) for every photo</b> so the photo sheets line up.</div>' + slots.map(s => '<div class="slot" data-slot="' + esc(s) + '"><div class="sh"><span class="nm">' + esc(s) + '<span class="pill off" data-cnt="' + esc(s) + '" hidden></span></span><label class="add">+ Photo<input type="file" accept="image/*" data-file="photo" data-slot="' + esc(s) + '"' + (s === 'Other' ? ' multiple' : '') + '></label></div><div class="thumbs" data-thumbs="' + esc(s) + '"></div></div>').join('') + '</div>';
+}
+
+// ---------- thumbnails ----------
+let urls = [];
+function revokeThumbs() { urls.forEach(u => URL.revokeObjectURL(u)); urls = []; }
+async function loadThumbs(id) {
+  let list = [];
+  try { list = (await jobPhotos(job.id, true)).filter(r => r.point === id).sort((a, b) => a.t < b.t ? -1 : 1); } catch (e) { return; }
+  const p = ps(id); if (p.photos !== list.length) { p.photos = list.length; save(); }
+  const by = {};
+  list.forEach(r => { (by[r.slot] = by[r.slot] || []).push(r); });
+  document.querySelectorAll('[data-thumbs]').forEach(box => {
+    const s = box.getAttribute('data-thumbs'), rs = by[s] || [];
+    const cnt = document.querySelector('[data-cnt="' + CSS.escape(s) + '"]'); if (cnt) { cnt.hidden = !rs.length; cnt.textContent = rs.length; cnt.className = 'pill good'; }
+    box.innerHTML = rs.map(r => { const u = URL.createObjectURL(new Blob([r.bytes], { type: 'image/jpeg' })); urls.push(u); return '<div class="thumb"><img src="' + u + '" alt="' + esc(id + ' ' + s) + '">' + (r.h > r.w ? '<span class="tall">Portrait</span>' : '') + '<button data-act="phdel" data-key="' + esc(r.key) + '">' + (pending && pending.kind === 'phdel' && pending.key === r.key ? 'Delete?' : '×') + '</button>' + (r.caption ? '<div class="cap">' + esc(r.caption) + '</div>' : '') + '</div>'; }).join('');
+  });
+}
+async function shrink(file) {
+  let bmp;
+  try { bmp = await createImageBitmap(file, { imageOrientation: 'from-image' }); }
+  catch (e) { bmp = await new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error('This photo format could not be read. Try a JPEG.')); im.src = URL.createObjectURL(file); }); }
+  const w = bmp.width, h = bmp.height, k = Math.min(1, 1600 / Math.max(w, h));
+  const c = document.createElement('canvas'); c.width = Math.round(w * k); c.height = Math.round(h * k);
+  c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+  const blob = await new Promise(res => c.toBlob(res, 'image/jpeg', 0.82));
+  return { bytes: await blob.arrayBuffer(), w: c.width, h: c.height };
+}
+async function addPhotos(files, slot) {
+  const id = view.id; let n = 0;
+  let caption = '', portrait = 0;
+  for (const f of files) {
+    try {
+      const { bytes, w, h } = await shrink(f);
+      if (h > w) portrait++;
+      const key = job.id + '/' + id + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
+      const p = ps(id);
+      await putPhoto({ key, job: job.id, point: id, slot, caption, t: nowIso(), gps: p.gps || null, w, h, bytes });
+      n++;
+    } catch (e) { toast('Photo not saved: ' + (e && e.message ? e.message : e), 5000); }
+  }
+  touch(id); save();
+  if (portrait) toast((portrait > 1 ? portrait + ' photos are' : 'That photo is') + ' portrait. Retake sideways (landscape) if you can, then delete the tall one.', 6000);
+  else if (n) toast(n + ' photo' + (n > 1 ? 's' : '') + ' saved');
+  loadThumbs(id);
+}
+
+// ---------- events ----------
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const a = b.getAttribute('data-act'), d = b.dataset;
+  if (a !== 'phdel' && pending && pending.kind === 'phdel') pending = null;
+  switch (a) {
+    case 'open': if (openJob(d.id)) { view = { name: 'job' }; render(); } break;
+    case 'home': view = { name: 'home' }; stopWatch(); render(); break;
+    case 'job': view = { name: 'job', keepScroll: false }; render(); if (st.sort === 'near') startWatch(); break;
+    case 'pt': view = { name: 'point', id: d.id }; render(); break;
+    case 'phase': st.phase = d.ph; save(); view.keepScroll = true; render(); break;
+    case 'tech': { const i = st.tech.indexOf(d.v); if (i >= 0) st.tech.splice(i, 1); else st.tech.push(d.v); save(); view.keepScroll = true; render(); break; }
+    case 'addtech': { const v = $('#newTech').value.trim(); if (v) { st.crewExtra.push(v); st.tech.push(v); save(); view.keepScroll = true; render(); } break; }
+    case 'sort': st.sort = d.v; save(); if (d.v === 'near') startWatch(); else stopWatch(); view.keepScroll = true; render(); break;
+    case 'addpt-open': view.addOpen = true; view.keepScroll = true; render(); setTimeout(() => { const x = $('#apId'); if (x) x.focus(); }, 50); break;
+    case 'addpt-cancel': view.addOpen = false; view.keepScroll = true; render(); break;
+    case 'addpt': {
+      const id = $('#apId').value.trim(); if (!id) { toast('Give the test point an ID first.'); break; }
+      if (pointDef(id)) { toast(id + ' is already in the list.'); break; }
+      const def = { id, type: $('#apType').value, mit: $('#apMit').value.trim(), note: $('#apNote').value.trim(), added: true, lat: null, lon: null };
+      st.added.push(def); save(true); view = { name: 'point', id }; render(); break;
+    }
+    case 'delpt': pending = { kind: 'delpt', msg: 'Remove ' + view.id + ' and its readings? Photos stay until the job is deleted.', yes: 'Remove' }; view.keepScroll = true; render(); break;
+    case 'opt': job.options = job.options || {}; job.options[d.k] = !!d.v; saveJobDef(); view.keepScroll = true; view.settingsOpen = true; render(); break;
+    case 'status': { const p = ps(view.id); p.status = d.v; touch(view.id); save(); view.keepScroll = true; render(); break; }
+    case 'gps': captureGps(); break;
+    case 'sign': {
+      const path = d.path, inp = b.parentNode.querySelector('input');
+      const cur = getPath(path); const p = ps(view.id);
+      const neg = !b.classList.contains('pos');
+      p.sg[path] = neg ? '+' : '-';
+      if (cur != null && String(cur).trim() !== '') setPath(path, (neg ? '' : '-') + String(cur).replace(/^\s*[-+]/, ''));
+      b.classList.toggle('pos', neg); b.textContent = neg ? '+' : '−';
+      save(); refreshWarn(); if (inp) inp.focus(); break;
+    }
+    case 'chk': { const p = ps(view.id); p.chk[d.i] = p.chk[d.i] === d.v ? undefined : d.v; touch(view.id); save(); view.keepScroll = true; render(); break; }
+    case 'pwrnow': { const p = ps(view.id); p.er.pwr = nowIso(); touch(view.id); save(); view.keepScroll = true; render(); break; }
+    case 'erdir': case 'erset': { const p = ps(view.id); p.er[d.k] = p.er[d.k] === d.v ? '' : d.v; touch(view.id); save(); view.keepScroll = true; render(); break; }
+    case 'setx': { const p = ps(view.id); p.x[d.k] = p.x[d.k] === d.v ? '' : d.v; touch(view.id); save(); view.keepScroll = true; render(); break; }
+    case 'xadd': { const p = ps(view.id); (p.extra[d.k] = p.extra[d.k] || []).push({ what: '', val: '', unit: '' }); save(); view.keepScroll = true; render(); break; }
+    case 'xdel': { const p = ps(view.id); p.extra[d.k].splice(Number(d.i), 1); save(); view.keepScroll = true; render(); break; }
+    case 'setp': { const p = ps(view.id); p[d.k] = p[d.k] === d.v ? '' : d.v; touch(view.id); save(); view.keepScroll = true; render(); break; }
+    case 'leadadd': { const p = ps(view.id); (p.leads = p.leads || []).push({ color: '', size: '', to: '', cond: 'ok' }); save(); view.keepScroll = true; render(); break; }
+    case 'leadcopy': { const p = ps(view.id); const last = p.leads[p.leads.length - 1]; p.leads.push(Object.assign({}, last, { color: '' })); save(); view.keepScroll = true; render(); break; }
+    case 'leaddel': { const p = ps(view.id); p.leads.splice(Number(d.i), 1); save(); view.keepScroll = true; render(); break; }
+    case 'leadcond': { const p = ps(view.id); p.leads[d.i].cond = d.v; touch(view.id); save(); view.keepScroll = true; render(); break; }
+    case 'chkall': { const p = ps(view.id); const T = TYPES[pointDef(view.id).type]; T.checks.forEach((c, i) => { if (p.chk[i] !== 'n') p.chk[i] = 'y'; }); touch(view.id); save(); view.keepScroll = true; render(); break; }
+    case 'dwgopen': openViewer(Number(d.p) || 1, 0); break;
+    case 'dwgadd-hint': view.settingsOpen = true; view.open = Object.assign(view.open || {}, { settings: true }); view.keepScroll = false; render(); setTimeout(() => { const el = document.querySelector('[data-file="drawings"]'); if (el) el.closest('label').scrollIntoView({ block: 'center' }); }, 50); toast('Add the drawing PDF here first.'); break;
+    case 'dwgclose': { const ov = document.getElementById('dwg'); if (ov) { ov.hidden = true; ov.innerHTML = ''; } document.body.style.overflow = ''; viewer = null; break; }
+    case 'dwgpage': if (viewer) { viewer.page = Math.min(Math.max(1, viewer.page + Number(d.d)), viewer.doc.numPages); drawViewer(); } break;
+    case 'dwgzoom': if (viewer) { const box = document.getElementById('dwgScroll'); const cx = box ? (box.scrollLeft + box.clientWidth / 2) / box.scrollWidth : .5, cy = box ? (box.scrollTop + box.clientHeight / 2) / box.scrollHeight : .5; viewer.zoom = Math.min(4, Math.max(1, viewer.zoom + Number(d.d))); await drawViewer(); const b2 = document.getElementById('dwgScroll'); b2.scrollLeft = cx * b2.scrollWidth - b2.clientWidth / 2; b2.scrollTop = cy * b2.scrollHeight - b2.clientHeight / 2; } break;
+    case 'dwgdel': { const f = st.drawings[Number(d.i)]; if (f) { await delFile(f.key); st.drawings.splice(Number(d.i), 1); save(true); toast('Removed ' + f.name); } view.keepScroll = true; view.settingsOpen = true; render(); break; }
+    case 'legadd': { const p = ps(view.id); p.legs.push({ label: '', len: '', pot: '', r1: '', r2: '' }); save(); view.keepScroll = true; render(); break; }
+    case 'phdel':
+      if (pending && pending.kind === 'phdel' && pending.key === d.key) { pending = null; await delPhoto(d.key); toast('Photo deleted'); loadThumbs(view.id); }
+      else { pending = { kind: 'phdel', key: d.key }; loadThumbs(view.id); setTimeout(() => { if (pending && pending.key === d.key) { pending = null; if (view.name === 'point') loadThumbs(view.id); } }, 4000); }
+      break;
+    case 'deljob': pending = { kind: 'deljob', msg: 'Delete ' + job.line + ' and all its readings and photos from this phone? Save a package first if you have not sent it.', yes: 'Delete' }; view.keepScroll = true; view.settingsOpen = true; render(); break;
+    case 'blank': {
+      const line = $('#blankLine').value.trim(); if (!line) { toast('Type the line name first.'); break; }
+      job = { kind: 'icg-commissioning-job', v: 1, id: 'blank-' + slug(line).toLowerCase().replace(/\s/g, '-') + '-' + Date.now().toString(36), line, client: '', title: line + ' commissioning', crew: [], options: { firstPhase: 'unmit', gpsTolFt: 50, couponAreaCm2: 1 }, points: [] };
+      saveJobDef(); st = newState(); save(true); view = { name: 'job', addOpen: true }; render(); break;
+    }
+    case 'demo': loadJobDef(DEMO); break;
+    case 'confirm-no': pending = null; view.keepScroll = true; render(); break;
+    case 'confirm-yes': {
+      const pd = pending; pending = null;
+      if (pd.kind === 'restore') await applyRestore(pd.data, pd.photos);
+      else if (pd.kind === 'deljob') { const id = job.id; const list = await jobPhotos(id, false); for (const r of list) await delPhoto(r.key); for (const f of (st.drawings || [])) await delFile(f.key); try { localStorage.removeItem('icgc:job:' + id); localStorage.removeItem('icgc:st:' + id); } catch (e2) {} store('icgc:jobs', jobsList().filter(j => j.id !== id)); job = null; st = null; view = { name: 'home' }; render(); toast('Job deleted'); }
+      else if (pd.kind === 'delpt') { st.added = st.added.filter(x => x.id !== view.id); delete st.pts[view.id]; save(true); view = { name: 'job' }; render(); }
+      break;
+    }
+  }
+});
+document.addEventListener('toggle', e => { const t = e.target; if (!t.matches || !t.matches('[data-det]')) return; if (t.dataset.det === 'settings') view.settingsOpen = t.open; view.open = view.open || {}; view.open[t.dataset.det] = t.open; }, true);
+function isOpen(k, dflt) { return view.open && k in view.open ? view.open[k] : !!dflt; }
+function getPath(path) { const p = ps(view.id); return path.split('.').reduce((o, k) => o == null ? undefined : o[k], p); }
+function setPath(path, val) {
+  const p = ps(view.id); const ks = path.split('.'); let o = p;
+  for (let i = 0; i < ks.length - 1; i++) { if (o[ks[i]] == null) o[ks[i]] = {}; o = o[ks[i]]; }
+  o[ks[ks.length - 1]] = val;
+}
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.matches('[data-opt]')) { job.options = job.options || {}; job.options[t.dataset.opt] = t.value; saveJobDef(); return; }
+  if (!t.matches('[data-bind]') || view.name !== 'point') return;
+  const path = t.dataset.bind; let v = t.value;
+  if (t.inputMode === 'decimal' && /[^0-9.\s+\-\u2212]/.test(v)) {
+    const c = cleanScan(v, path);
+    if (c) {
+      if (t.dataset.sign) { const keepNeg = !t.parentNode.querySelector('.sgn').classList.contains('pos'); const neg = c.neg === null ? keepNeg : c.neg; setSignBtn(t, neg); t.value = c.val.replace(/^-/, ''); v = t.value; }
+      else { t.value = c.val; v = c.val; }
+    }
+  }
+  if (t.dataset.sign) {
+    const lead = v.trim()[0];
+    if (lead === '-' || lead === '\u2212') setSignBtn(t, true); else if (lead === '+') setSignBtn(t, false);
+    v = v.replace(/^\s*[-+\u2212]/, '');
+    if (t.value !== v && /^\s*[-+\u2212]/.test(t.value)) { t.value = v; }
+    const sb = t.parentNode.querySelector('.sgn'); const neg = !sb.classList.contains('pos');
+    v = v.trim() === '' ? '' : (neg ? '-' : '') + v.trim().replace(/^\./, '0.');
+  }
+  setPath(path, v);
+  const ph = path[0] === 'u' && path[1] === '.' ? 'u' : (path[0] === 'm' && path[1] === '.' ? 'm' : null);
+  touch(view.id, ph); save(); refreshWarn();
+});
+function setSignBtn(input, neg) {
+  const sb = input.parentNode.querySelector('.sgn'); if (!sb) return;
+  sb.classList.toggle('pos', !neg); sb.textContent = neg ? '\u2212' : '+';
+  const p = ps(view.id); p.sg[input.dataset.bind] = neg ? '-' : '+';
+}
+// Text from the phone's Scan Text, e.g. "-1.116 V DC", "300.5 mV AC", "1.41 kΩ". Returns the value in the field's own unit.
+function cleanScan(raw, path) {
+  const s = String(raw).replace(/\u2212/g, '-').replace(/,/g, '.');
+  const m = s.match(/(-?)\s*(\d+(?:\.\d+)?|\.\d+)/); if (!m) return null;
+  let n = Number(m[2]); const minus = m[1] === '-' || /^\s*-/.test(s), plus = /^\s*\+/.test(s);
+  const key = path.split('.').pop(), f = F[key] || {}, unit = f.u || (key === 'pot' ? 'V' : (key === 'r1' || key === 'r2') ? 'Ω' : '');
+  const rest = s.slice(m.index + m[0].length);
+  if (/^\s*m\s*V/i.test(rest) && /V/.test(unit)) n = n / 1000;
+  else if (/^\s*m\s*A/i.test(rest) && unit === 'A') n = n / 1000;
+  else if (/^\s*A/i.test(rest) && unit === 'mA') n = n * 1000;
+  else if (/^\s*k/i.test(rest) && unit === 'Ω') n = n * 1000;
+  const val = String(Number(n.toPrecision(6)));
+  // a scan can miss the minus sign: on normally negative fields keep the current sign unless the scan shows +
+  const neg = minus ? true : plus ? false : (f.sign === 'neg' || key === 'pot') ? null : false;
+  return { val: (minus ? '-' : '') + val, neg };
+}
+function refreshWarn() { const box = $('#warnBox'); if (box && view.name === 'point') box.innerHTML = warnHtml(pointDef(view.id)); updateBar(); }
+document.addEventListener('change', async e => {
+  const t = e.target;
+  if (t.id === 'dwgFile' && viewer) { openViewer(viewer.page, Number(t.value)); return; }
+  if (t.matches('select[data-bind]') && view.name === 'point') { setPath(t.dataset.bind, t.value); touch(view.id); save(); refreshWarn(); return; }
+  if (t.matches('[data-ovtype]') && view.name === 'point') {
+    const p = ps(view.id); p.ov = p.ov || {}; const raw = (job.points || []).concat(st.added || []).find(x => x.id === view.id);
+    if (raw && raw.type === t.value) delete p.ov.type; else p.ov.type = t.value;
+    touch(view.id); save(); view.keepScroll = true; render(); return;
+  }
+  if (!t.matches('[data-file]')) return;
+  const files = Array.from(t.files || []); t.value = ''; if (!files.length) return;
+  const kind = t.dataset.file;
+  try {
+    if (kind === 'photo') await addPhotos(files, t.dataset.slot);
+    else if (kind === 'job') { const j = JSON.parse(await files[0].text()); loadJobDef(j); }
+    else if (kind === 'restore') await readRestore(files[0]);
+    else if (kind === 'drawings') await addDrawings(files);
+  } catch (err) { toast('Could not read that file: ' + (err && err.message ? err.message : err), 6000); }
+});
+
+async function addDrawings(files) {
+  st.drawings = st.drawings || [];
+  for (const f of files) {
+    if (!/\.pdf$/i.test(f.name) && f.type !== 'application/pdf') { toast(f.name + ' is not a PDF.'); continue; }
+    const bytes = await f.arrayBuffer();
+    let pages = 0;
+    try { const lib = await loadPdfJs(); const doc = await lib.getDocument({ data: new Uint8Array(bytes.slice(0)) }).promise; pages = doc.numPages; } catch (e) { pages = 0; }
+    const key = job.id + '/dwg/' + Date.now() + '-' + Math.random().toString(36).slice(2, 6);
+    await putFile({ key, name: f.name, bytes });
+    st.drawings.push({ key, name: f.name, pages: pages || '?', size: bytes.byteLength });
+  }
+  save(true); view.keepScroll = true; view.settingsOpen = true; render(); toast('Drawings saved on this phone.');
+}
+
+// ---------- GPS ----------
+function captureGps() {
+  if (!navigator.geolocation) { toast('This browser has no GPS access.'); return; }
+  toast('Getting GPS...', 20000);
+  navigator.geolocation.getCurrentPosition(pos => {
+    const p = ps(view.id); p.gps = { lat: pos.coords.latitude, lon: pos.coords.longitude, acc: pos.coords.accuracy, t: nowIso() };
+    touch(view.id); save(); toast('GPS saved, ±' + Math.round(pos.coords.accuracy * 3.281) + ' ft'); view.keepScroll = true; render();
+  }, err => toast('GPS failed: ' + err.message + '. Open the app from the home screen link, not inside claude.ai, and allow location.', 7000), { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
+}
+function startWatch() {
+  if (watchId != null || !navigator.geolocation) return;
+  watchId = navigator.geolocation.watchPosition(pos => { const first = !here; here = { lat: pos.coords.latitude, lon: pos.coords.longitude }; if (view.name === 'job' && (first || Math.random() < 0.2)) { view.keepScroll = true; render(); } }, () => { toast('Location is not available, so the list stays in drawing order.'); st.sort = 'drawing'; stopWatch(); if (view.name === 'job') { view.keepScroll = true; render(); } }, { enableHighAccuracy: true, maximumAge: 15000 });
+}
+function stopWatch() { if (watchId != null) navigator.geolocation.clearWatch(watchId); watchId = null; }
+
+// ---------- job files, restore ----------
+function loadJobDef(j) {
+  if (!j || j.kind !== 'icg-commissioning-job' || !Array.isArray(j.points)) throw new Error('That is not a commissioning job file.');
+  const existed = !!store('icgc:job:' + j.id);
+  job = j; saveJobDef();
+  st = store('icgc:st:' + j.id) || newState(); save(true);
+  view = { name: 'job' }; render();
+  toast(existed ? 'Job file updated. Your readings were kept.' : j.line + ' loaded with ' + j.points.length + ' test points.');
+}
+async function readRestore(file) {
+  let data, photos = [];
+  if (/\.zip$/i.test(file.name) || file.type === 'application/zip') {
+    const zip = await JSZip.loadAsync(file);
+    const f = zip.file('data.json'); if (!f) throw new Error('No data.json inside that zip.');
+    data = JSON.parse(await f.async('string'));
+    for (const ph of (data.photos || [])) { const zf = zip.file(ph.file); if (zf) photos.push(Object.assign({}, ph, { bytes: await zf.async('arraybuffer') })); }
+  } else data = JSON.parse(await file.text());
+  if (!data || data.kind !== 'icg-commissioning-package') throw new Error('That is not a saved package from this app.');
+  const exists = !!store('icgc:job:' + data.job.id);
+  if (exists) { pending = { kind: 'restore', data, photos, msg: 'This phone already has ' + data.job.line + '. Replace its readings with the ones in this file (saved ' + new Date(data.exportedAt).toLocaleString() + ')?' + (photos.length ? ' ' + photos.length + ' photos will be added.' : ''), yes: 'Replace' }; view.keepScroll = true; render(); }
+  else await applyRestore(data, photos);
+}
+async function applyRestore(data, photos) {
+  job = data.job; saveJobDef(); st = data.state; save(true);
+  const have = new Set((await jobPhotos(job.id, false)).map(r => r.key));
+  let n = 0;
+  for (const ph of photos) { if (have.has(ph.key)) continue; await putPhoto({ key: ph.key, job: job.id, point: ph.point, slot: ph.slot, caption: ph.caption || '', t: ph.t, gps: ph.gps || null, bytes: ph.bytes }); n++; }
+  view = { name: 'job' }; render(); toast('Restored ' + job.line + (n ? ' with ' + n + ' photos' : ''));
+}
+
+// ---------- export ----------
+function initials() { return (st.tech[0] || 'ICG').split(',')[0].split(/\s+/).map(w => w[0] || '').join('').toUpperCase(); }
+function csvCell(v) { v = v == null ? '' : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+function readingsCsv() {
+  const pts = allPoints(); const maxLegs = Math.max(1, ...pts.map(d => (ps(d.id).legs || []).length));
+  const cols = ['No', 'Test Station ID', 'Type', 'Mitigation #', 'Design Latitude', 'Design Longitude', 'Field Latitude', 'Field Longitude', 'GPS Offset (ft)', 'Status',
+    'Unmit DC ON (V)', 'Unmit DC OFF (V)', 'Unmit AC (V)', 'Unmit Coupon AC (V)', 'Unmit Coupon AC Current (uA)', 'Unmit Coupon AC Density (A/m2)', 'Unmit Coupon DC (V)', 'Unmit Coupon Disconnected DC (V)', 'Unmit Coupon DC Current (uA)',
+    'Mit DC ON (V)', 'Mit DC OFF (V)', 'Mit AC (V)', 'SSD AC Current (A)', 'Mit Coupon AC (V)', 'Mit Coupon AC Current (uA)', 'Mit Coupon AC Density (A/m2)', 'Mit Coupon DC (V)', 'Mit Coupon Disconnected DC (V)', 'Mit Coupon DC Current (uA)',
+    'Stationary-to-Portable Ref (V)'];
+  for (let i = 1; i <= maxLegs; i++) cols.push('Lead ' + i + ' Label', 'Lead ' + i + ' Length (ft)', 'Lead ' + i + ' Potential (V)', 'Lead ' + i + ' Resistance 1 (ohm)', 'Lead ' + i + ' Resistance 2 (ohm)');
+  cols.push('Rectifier V', 'Rectifier A', 'Tap', 'Iso Side A DC', 'Iso Side B DC', 'Iso Side A AC', 'Iso Side B AC', 'Iso Result', 'Logger AM', 'MasterLink AL', 'ER1', 'ER1 Dir', 'ER2', 'ER2 Dir', 'MetriCorr Status Light', 'MetriCorr Powered Up', 'MetriCorr Notes', 'Other Readings', 'Checklist No', 'Checks', 'Inspection Remarks', 'Photos', 'Unmit By', 'Mit By', 'Drawing Type', 'Label in Field', 'Matches Drawings', 'Differences', 'SSD As Found', 'SSD Left', 'Test Leads', 'Type Readings');
+  const rows = [cols];
+  pts.forEach((d, n) => {
+    const p = ps(d.id), T = TYPES[d.type] || { checks: [] }, off = distFt(d.lat, d.lon, p.gps && p.gps.lat, p.gps && p.gps.lon);
+    const ju = density(p.u.c_iac), jm = density(p.m.c_iac);
+    const r = [n + 1, d.id, (TYPES[d.type] || {}).name || d.type, d.mit || '', d.lat ?? '', d.lon ?? '', p.gps ? p.gps.lat.toFixed(6) : '', p.gps ? p.gps.lon.toFixed(6) : '', off == null ? '' : Math.round(off), (STATUS.find(s => s[0] === p.status) || [])[1],
+      p.u.dc_on, p.u.dc_off, p.u.ac, p.u.c_ac, p.u.c_iac, ju == null ? '' : ju.toFixed(2), p.u.c_dc, p.u.c_disc, p.u.c_idc,
+      p.m.dc_on, p.m.dc_off, p.m.ac, p.m.ssd_a, p.m.c_ac, p.m.c_iac, jm == null ? '' : jm.toFixed(2), p.m.c_dc, p.m.c_disc, p.m.c_idc, p.x.ref];
+    for (let i = 0; i < maxLegs; i++) { const l = (p.legs || [])[i] || {}; r.push(l.label, l.len, l.pot, l.r1, l.r2); }
+    const ex = ['u', 'm', 'x'].flatMap(k => (p.extra[k] || []).filter(x => x.what || x.val).map(x => (k === 'u' ? 'Unmit ' : k === 'm' ? 'Mit ' : '') + x.what + ' ' + x.val + ' ' + (x.unit || ''))).join('; ');
+    r.push(p.x.rect_v, p.x.rect_a, p.x.rect_tap, p.x.iso_a, p.x.iso_b, p.x.iso_aac, p.x.iso_bac, p.x.iso_res, p.er.am, p.er.al, p.er.er1, p.er.er1d, p.er.er2, p.er.er2d, p.er.led || p.er.comm || '', p.er.pwr || '', p.er.note, ex,
+      (T.checks || []).filter((c, i) => p.chk[i] === 'n').join('; '), checks(d).filter(w => w.lvl !== 'info').map(w => w.msg).join(' '), p.rem, p.photos || 0, p.by.u ? p.by.u.tech + ' ' + p.by.u.t : '', p.by.m ? p.by.m.tech + ' ' + p.by.m.t : '',
+      d.drawingType && d.drawingType !== d.type ? ((TYPES[d.drawingType] || {}).name || d.drawingType) : '', d.tag || '', p.match || '', p.diff || '', p.ssdFound || '', p.ssdLeft || '',
+      (p.leads || []).map(l => [l.color, l.size, l.to ? 'to ' + l.to : '', l.cond && l.cond !== 'ok' ? '(' + l.cond + ')' : ''].filter(Boolean).join(' ')).join('; '),
+      typeReadings(p));
+    rows.push(r);
+  });
+  return '﻿' + rows.map(r => r.map(csvCell).join(',')).join('\r\n');
+}
+const TYPE_KEYS = ['f_dc_on', 'f_dc_off', 'f_ac', 'cs_dc', 'cs_ac', 'f_owner', 'bond_i', 'bond_r', 'an_oc', 'an_i', 'an_disc', 'bond'];
+function typeReadings(p) {
+  const out = [];
+  ['u', 'm', 'x'].forEach(k => TYPE_KEYS.forEach(f => { const v = p[k] && p[k][f]; if (v != null && v !== '') out.push((k === 'u' ? 'Unmit ' : k === 'm' ? 'Mit ' : '') + (F[f] ? F[f].l : 'Bond') + ' ' + v + (F[f] && F[f].u ? ' ' + F[f].u : '')); }));
+  return out.join('; ');
+}
+function kml() {
+  const pm = allPoints().map(d => { const p = ps(d.id); const la = p.gps ? p.gps.lat : d.lat, lo = p.gps ? p.gps.lon : d.lon; if (la == null) return ''; return '<Placemark><name>' + esc(d.id) + '</name><description>' + esc(((TYPES[d.type] || {}).name || '') + (d.mit ? ', ' + d.mit : '') + (p.gps ? ', field GPS' : ', design GPS (not captured)') + (p.rem ? '. ' + p.rem : '')) + '</description><Point><coordinates>' + lo + ',' + la + ',0</coordinates></Point></Placemark>'; }).join('');
+  return '<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>' + esc(job.line + ' as-found') + '</name>' + pm + '</Document></kml>';
+}
+async function buildPackage(withPhotos) {
+  const recs = await jobPhotos(job.id, withPhotos);
+  const used = {}; const photos = [];
+  recs.sort((a, b) => a.point === b.point ? (a.t < b.t ? -1 : 1) : (a.point < b.point ? -1 : 1)).forEach(r => {
+    let base = slug(r.point) + ' ' + slug(r.slot); used[base] = (used[base] || 0) + 1; if (used[base] > 1) base += ' ' + used[base];
+    photos.push({ key: r.key, file: 'photos/' + slug(r.point) + '/' + base + '.jpg', point: r.point, slot: r.slot, caption: r.caption || '', t: r.t, gps: r.gps || null, bytes: r.bytes });
+  });
+  const data = { kind: 'icg-commissioning-package', v: 1, app: APP_VERSION, exportedAt: nowIso(), tech: st.tech.slice(), job, state: st, photos: photos.map(p => Object.assign({}, p, { bytes: undefined })) };
+  return { data, photos };
+}
+async function share(file) {
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: file.name }); return 'shared'; } catch (e) { if (e && e.name === 'AbortError') return 'cancel'; }
+  }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(file); a.download = file.name; document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 4000); return 'download';
+}
+$('#btnZip').addEventListener('click', async () => {
+  const btn = $('#btnZip'); btn.disabled = true; btn.textContent = 'Building...';
+  try {
+    save(true);
+    const { data, photos } = await buildPackage(true);
+    const zip = new JSZip();
+    zip.file('data.json', JSON.stringify(data, null, 1));
+    zip.file(slug(job.line) + ' readings.csv', readingsCsv());
+    zip.file(slug(job.line) + ' as-found.kml', kml());
+    photos.forEach(p => zip.file(p.file, p.bytes, { binary: true }));
+    const blob = await zip.generateAsync({ type: 'blob', compression: 'STORE' });
+    const name = slug(job.line) + ' commissioning ' + today() + ' ' + initials() + '.zip';
+    const file = new File([blob], name, { type: 'application/zip' });
+    const r = await share(file);
+    if (r === 'shared') toast('Package sent. ' + photos.length + ' photos, ' + (blob.size / 1048576).toFixed(1) + ' MB.', 4000);
+    else if (r === 'download') toast('Package downloaded: ' + name + ' (' + (blob.size / 1048576).toFixed(1) + ' MB). Save it to OneDrive.', 6000);
+  } catch (e) { toast('Package failed: ' + (e && e.message ? e.message : e), 7000); }
+  btn.disabled = false; btn.textContent = 'Save package';
+});
+$('#btnJson').addEventListener('click', async () => {
+  try {
+    save(true);
+    const { data } = await buildPackage(false);
+    const name = slug(job.line) + ' readings ' + today() + ' ' + initials() + '.json';
+    const r = await share(new File([JSON.stringify(data, null, 1)], name, { type: 'application/json' }));
+    if (r !== 'cancel') toast('Readings file ready: ' + name + '. No photos in this one.', 4000);
+  } catch (e) { toast('Could not make the readings file: ' + (e && e.message ? e.message : e), 6000); }
+});
+
+// ---------- demo job (made up, not a real line) ----------
+const DEMO = { kind: 'icg-commissioning-job', v: 1, id: 'demo', demo: true, line: 'DEMO', client: 'Practice', title: 'Practice line with made-up points', crew: ['Practice Tech'], options: { firstPhase: 'unmit', gpsTolFt: 50, couponAreaCm2: 1 },
+  points: [
+    { id: 'RMU 1', type: 'rmu', mit: 'MIT_01', lat: 40.0001, lon: -111.9001, sheet: '2', note: 'Practice point' },
+    { id: 'DCD_01', type: 'ssd', mit: 'MIT_01', rating: 'SSD 3.7KA', lat: 40.0002, lon: -111.9002, sheet: '2', legs: [{ label: 'HG-01a', len: 300 }, { label: 'HG-01b', len: 300 }] },
+    { id: 'CTS 1', type: 'cts', lat: 40.0100, lon: -111.9100, sheet: '3' },
+    { id: 'Rectifier 1', type: 'rect', lat: 40.0200, lon: -111.9200 }
+  ] };
+
+// ---------- start ----------
+try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
+const act = store('icgc:active');
+if (act && openJob(act)) view = { name: 'job' };
+render();
+window.__icgc = { get job() { return job; }, get st() { return st; }, checks, readingsCsv, buildPackage };
+})();
+</script>
+
+</body></html>
