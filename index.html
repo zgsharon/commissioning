@@ -183,7 +183,7 @@
 <script>
 (function () {
 'use strict';
-const APP_VERSION = '1.7 (2026-10-07)';
+const APP_VERSION = '1.8 (2026-10-08)';
 
 // ---------- field and point type definitions ----------
 // sign: 'neg' fields show a minus toggle that starts on minus (typed value is the magnitude); 'pm' starts on minus but is often positive.
@@ -391,12 +391,19 @@ function render() {
   $('#bar').hidden = !(job && view.name !== 'home');
   updateBar();
   if (view.name === 'point') loadThumbs(view.id);
+  refreshUnsaved();
   window.scrollTo(0, keepY);
 }
+let unsavedCount = 0;
 function updateBar() {
   if (!job) return;
   const pts = allPoints(), done = pts.filter(pointDone).length;
-  $('#barStatus').textContent = job.line + ': ' + done + ' of ' + pts.length + ' test points done';
+  $('#barStatus').innerHTML = esc(job.line) + ': ' + done + ' of ' + pts.length + ' test points done' + (unsavedCount ? '<br><b style="color:var(--warn)">' + unsavedCount + ' photo' + (unsavedCount > 1 ? 's' : '') + ' not saved yet</b>' : '');
+}
+async function refreshUnsaved() {
+  if (!job) return;
+  try { const saved = st.savedPhotos || {}; unsavedCount = (await jobPhotos(job.id, false)).filter(r => !saved[r.key]).length; } catch (e) { unsavedCount = 0; }
+  updateBar();
 }
 
 function homeHtml() {
@@ -491,6 +498,7 @@ function settingsHtml() {
   const dw = st.drawings || [];
   h += '<div><span class="lbl">Drawings on this phone</span>' + (dw.length ? dw.map((f, i) => '<div class="btns" style="align-items:center;justify-content:space-between;margin-bottom:6px"><span>' + esc(f.name) + ' <span class="sub">(' + f.pages + ' pages, ' + (f.size / 1048576).toFixed(1) + ' MB)</span></span><button class="btn small ghost danger" data-act="dwgdel" data-i="' + i + '">Remove</button></div>').join('') : '<div class="hint" style="margin-bottom:6px">None yet. Add the IFC drawing PDF so the Drawings button works with no signal.</div>') +
     '<label class="btn small">Add drawings (PDF)<input type="file" accept=".pdf,application/pdf" data-file="drawings" multiple></label></div>';
+  h += '<div><button class="btn small" data-act="saveall">Save package with all photos</button><div class="hint">Save package at the bottom only adds photos taken since the last save. Use this for a full copy, for example to move the job to another phone.</div></div>';
   h += '<div class="btns"><label class="btn small">Load an updated job file<input type="file" accept=".json,application/json" data-file="job"></label><label class="btn small">Restore from a package<input type="file" accept=".zip,.json" data-file="restore"></label></div>';
   if (pending && pending.kind === 'deljob') h += confirmHtml();
   else h += '<div><button class="btn small danger" data-act="deljob">Delete this job from the phone</button></div>';
@@ -740,7 +748,7 @@ async function addPhotos(files, slot) {
       n++;
     } catch (e) { toast('Photo not saved: ' + (e && e.message ? e.message : e), 5000); }
   }
-  touch(id); save();
+  touch(id); save(); refreshUnsaved();
   if (portrait) toast((portrait > 1 ? portrait + ' photos are' : 'That photo is') + ' portrait. Retake sideways (landscape) if you can, then delete the tall one.', 6000);
   else if (n) toast(n + ' photo' + (n > 1 ? 's' : '') + ' saved');
   loadThumbs(id);
@@ -799,9 +807,10 @@ document.addEventListener('click', async e => {
     case 'dwgpage': if (viewer) { viewer.page = Math.min(Math.max(1, viewer.page + Number(d.d)), viewer.doc.numPages); drawViewer(); } break;
     case 'dwgzoom': if (viewer) { const box = document.getElementById('dwgScroll'); const cx = box ? (box.scrollLeft + box.clientWidth / 2) / box.scrollWidth : .5, cy = box ? (box.scrollTop + box.clientHeight / 2) / box.scrollHeight : .5; viewer.zoom = Math.min(4, Math.max(1, viewer.zoom + Number(d.d))); await drawViewer(); const b2 = document.getElementById('dwgScroll'); b2.scrollLeft = cx * b2.scrollWidth - b2.clientWidth / 2; b2.scrollTop = cy * b2.scrollHeight - b2.clientHeight / 2; } break;
     case 'dwgdel': { const f = st.drawings[Number(d.i)]; if (f) { await delFile(f.key); st.drawings.splice(Number(d.i), 1); save(true); toast('Removed ' + f.name); } view.keepScroll = true; view.settingsOpen = true; render(); break; }
+    case 'saveall': await savePackage(true); break;
     case 'legadd': { const p = ps(view.id); p.legs.push({ label: '', len: '', pot: '', r1: '', r2: '' }); save(); view.keepScroll = true; render(); break; }
     case 'phdel':
-      if (pending && pending.kind === 'phdel' && pending.key === d.key) { pending = null; await delPhoto(d.key); toast('Photo deleted'); loadThumbs(view.id); }
+      if (pending && pending.kind === 'phdel' && pending.key === d.key) { pending = null; await delPhoto(d.key); (st.deletedPhotos = st.deletedPhotos || []).push(d.key); save(true); refreshUnsaved(); toast('Photo deleted'); loadThumbs(view.id); }
       else { pending = { kind: 'phdel', key: d.key }; loadThumbs(view.id); setTimeout(() => { if (pending && pending.key === d.key) { pending = null; if (view.name === 'point') loadThumbs(view.id); } }, 4000); }
       break;
     case 'deljob': pending = { kind: 'deljob', msg: 'Delete ' + job.line + ' and all its readings and photos from this phone? Save a package first if you have not sent it.', yes: 'Delete' }; view.keepScroll = true; view.settingsOpen = true; render(); break;
@@ -947,7 +956,7 @@ async function readRestore(file) {
   else await applyRestore(data, photos);
 }
 async function applyRestore(data, photos) {
-  job = data.job; saveJobDef(); st = data.state; save(true);
+  job = data.job; saveJobDef(); st = data.state; st.savedPhotos = st.savedPhotos || {}; photos.forEach(p => { st.savedPhotos[p.key] = 1; }); save(true);
   const have = new Set((await jobPhotos(job.id, false)).map(r => r.key));
   let n = 0;
   for (const ph of photos) { if (have.has(ph.key)) continue; await putPhoto({ key: ph.key, job: job.id, point: ph.point, slot: ph.slot, caption: ph.caption || '', t: ph.t, gps: ph.gps || null, bytes: ph.bytes }); n++; }
@@ -993,8 +1002,9 @@ function kml() {
   const pm = allPoints().map(d => { const p = ps(d.id); const la = p.gps ? p.gps.lat : d.lat, lo = p.gps ? p.gps.lon : d.lon; if (la == null) return ''; return '<Placemark><name>' + esc(d.id) + '</name><description>' + esc(((TYPES[d.type] || {}).name || '') + (d.mit ? ', ' + d.mit : '') + (p.gps ? ', field GPS' : ', design GPS (not captured)') + (p.rem ? '. ' + p.rem : '')) + '</description><Point><coordinates>' + lo + ',' + la + ',0</coordinates></Point></Placemark>'; }).join('');
   return '<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>' + esc(job.line + ' as-found') + '</name>' + pm + '</Document></kml>';
 }
-async function buildPackage(withPhotos) {
-  const recs = await jobPhotos(job.id, withPhotos);
+async function buildPackage(withPhotos, all) {
+  const saved = st.savedPhotos || {};
+  const recs = (await jobPhotos(job.id, withPhotos)).filter(r => all || !saved[r.key]);
   const used = {}; const photos = [];
   recs.sort((a, b) => a.point === b.point ? (a.t < b.t ? -1 : 1) : (a.point < b.point ? -1 : 1)).forEach(r => {
     let base = slug(r.point) + ' ' + slug(r.slot); used[base] = (used[base] || 0) + 1; if (used[base] > 1) base += ' ' + used[base];
@@ -1012,23 +1022,30 @@ async function share(file) {
 }
 $('#btnZip').addEventListener('click', async () => {
   const btn = $('#btnZip'); btn.disabled = true; btn.textContent = 'Building...';
+  await savePackage(false);
+  btn.disabled = false; btn.textContent = 'Save package';
+});
+async function savePackage(all) {
   try {
     save(true);
-    const { data, photos } = await buildPackage(true);
+    const { data, photos } = await buildPackage(true, all);
     const zip = new JSZip();
     zip.file('data.json', JSON.stringify(data, null, 1));
     zip.file(slug(job.line) + ' readings.csv', readingsCsv());
     zip.file(slug(job.line) + ' as-found.kml', kml());
     photos.forEach(p => zip.file(p.file, p.bytes, { binary: true }));
     const blob = await zip.generateAsync({ type: 'blob', compression: 'STORE' });
-    const name = slug(job.line) + ' commissioning ' + today() + ' ' + initials() + '.zip';
+    const d = new Date(), hhmm = String(d.getHours()).padStart(2, '0') + String(d.getMinutes()).padStart(2, '0') + '-' + String(d.getSeconds()).padStart(2, '0');
+    const name = slug(job.line) + ' commissioning ' + today() + ' ' + hhmm + ' ' + initials() + (all ? ' all photos' : '') + '.zip';
     const file = new File([blob], name, { type: 'application/zip' });
     const r = await share(file);
-    if (r === 'shared') toast('Package sent. ' + photos.length + ' photos, ' + (blob.size / 1048576).toFixed(1) + ' MB.', 4000);
-    else if (r === 'download') toast('Package downloaded: ' + name + ' (' + (blob.size / 1048576).toFixed(1) + ' MB). Save it to OneDrive.', 6000);
+    if (r === 'shared' || r === 'download') {
+      st.savedPhotos = st.savedPhotos || {}; photos.forEach(p => { st.savedPhotos[p.key] = 1; }); save(true); refreshUnsaved();
+      const what = photos.length ? 'Readings and ' + photos.length + ' photo' + (photos.length > 1 ? 's' : '') : 'Readings (no new photos)';
+      toast(r === 'shared' ? what + ' saved. ' + (blob.size / 1048576).toFixed(1) + ' MB.' : 'Downloaded ' + name + '. Save it to OneDrive.', 5000);
+    }
   } catch (e) { toast('Package failed: ' + (e && e.message ? e.message : e), 7000); }
-  btn.disabled = false; btn.textContent = 'Save package';
-});
+}
 $('#btnJson').addEventListener('click', async () => {
   try {
     save(true);
