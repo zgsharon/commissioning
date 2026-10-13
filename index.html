@@ -183,7 +183,7 @@
 <script>
 (function () {
 'use strict';
-const APP_VERSION = '1.8 (2026-10-08)';
+const APP_VERSION = '1.9 (2026-10-13)';
 
 // ---------- field and point type definitions ----------
 // sign: 'neg' fields show a minus toggle that starts on minus (typed value is the magnitude); 'pm' starts on minus but is often positive.
@@ -1067,9 +1067,41 @@ const DEMO = { kind: 'icg-commissioning-job', v: 1, id: 'demo', demo: true, line
 
 // ---------- start ----------
 try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
-const act = store('icgc:active');
-if (act && openJob(act)) view = { name: 'job' };
-render();
+// Access code. Only a salted PBKDF2 hash is in this page. Each phone asks once, then remembers.
+const GATE = { salt: 'icg-commissioning-gate-v1', iter: 150000, hash: '8da1fa63db9e6348f9481922d999b8d0e96961a042f359889d45a28600a665ec' };
+async function gateHash(pw) {
+  const k = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveBits']);
+  const b = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: new TextEncoder().encode(GATE.salt), iterations: GATE.iter, hash: 'SHA-256' }, k, 256);
+  return Array.from(new Uint8Array(b)).map(x => x.toString(16).padStart(2, '0')).join('');
+}
+function startApp() {
+  const act = store('icgc:active');
+  if (act && openJob(act)) view = { name: 'job' };
+  render();
+}
+if (store('icgc:unlock') === GATE.hash) startApp();
+else {
+  const g = document.createElement('div');
+  g.id = 'gate';
+  g.style.cssText = 'position:fixed;inset:0;z-index:9999;background:var(--bg,#fff);display:flex;align-items:center;justify-content:center;padding:24px;font:16px system-ui,-apple-system,sans-serif';
+  g.innerHTML = '<form style="width:100%;max-width:320px;text-align:center"><h2 style="margin:0 0 6px">ICG Commissioning</h2>'
+    + '<p style="margin:0 0 18px;color:#666">Enter the ICG access code.</p>'
+    + '<input id="gatePw" type="password" autocomplete="current-password" autocapitalize="characters" spellcheck="false" style="width:100%;box-sizing:border-box;font-size:20px;padding:12px;border:1px solid #999;border-radius:10px;text-align:center">'
+    + '<button type="submit" style="margin-top:14px;width:100%;font-size:18px;padding:12px;border:0;border-radius:10px;background:#1f5fa8;color:#fff">Open</button>'
+    + '<p id="gateMsg" style="min-height:1.4em;margin:12px 0 0;color:#b00020"></p></form>';
+  document.body.appendChild(g);
+  const pw = g.querySelector('#gatePw'), msg = g.querySelector('#gateMsg');
+  setTimeout(() => pw.focus(), 50);
+  g.querySelector('form').addEventListener('submit', async ev => {
+    ev.preventDefault();
+    msg.style.color = '#666'; msg.textContent = 'Checking...';
+    try {
+      const h = await gateHash(pw.value.trim().toUpperCase());
+      if (h === GATE.hash) { store('icgc:unlock', h); g.remove(); startApp(); }
+      else { msg.style.color = '#b00020'; msg.textContent = 'That code is not right.'; pw.select(); }
+    } catch (e) { msg.style.color = '#b00020'; msg.textContent = 'This browser cannot check the code. Open the app link in Safari or Chrome.'; }
+  });
+}
 window.__icgc = { get job() { return job; }, get st() { return st; }, checks, readingsCsv, buildPackage };
 })();
 </script>
