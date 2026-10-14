@@ -1106,4 +1106,5 @@ window.__icgc = { get job() { return job; }, get st() { return st; }, checks, re
 })();
 </script>
 
+<script>/* ICG offline loading, core v1 */(function(){try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(function(){});var top=true;try{top=window.self===window.top}catch(e){top=false}if('serviceWorker' in navigator&&location.protocol==='https:'&&top)window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});}catch(e){}})();</script>
 </body></html>
